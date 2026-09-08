@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.1].define(version: 2026_08_14_000000) do
+ActiveRecord::Schema[7.2].define(version: 2026_09_11_000000) do
   # These extensions should be enabled to support this database
   enable_extension "pg_stat_statements"
   enable_extension "pg_trgm"
@@ -502,8 +502,8 @@ ActiveRecord::Schema[7.1].define(version: 2026_08_14_000000) do
     t.integer "status", default: 0, null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.index ["account_id"], name: "index_captain_faq_suggestions_on_account_id"
     t.index ["account_id", "assistant_id", "status", "language"], name: "idx_cap_faq_suggestions_on_account_assistant_status_language"
+    t.index ["account_id"], name: "index_captain_faq_suggestions_on_account_id"
     t.index ["assistant_id"], name: "index_captain_faq_suggestions_on_assistant_id"
     t.index ["embedding"], name: "vector_idx_captain_faq_suggestions_embedding", opclass: :vector_cosine_ops, using: :ivfflat
   end
@@ -726,6 +726,10 @@ ActiveRecord::Schema[7.1].define(version: 2026_08_14_000000) do
     t.boolean "hmac_mandatory", default: false
     t.boolean "continuity_via_email", default: true, null: false
     t.text "allowed_domains", default: ""
+    t.string "announcement"
+    t.string "announcement_url"
+    t.string "announcement_link_target", default: "new_tab", null: false
+    t.string "display_name"
     t.index ["hmac_token"], name: "index_channel_web_widgets_on_hmac_token", unique: true
     t.index ["website_token"], name: "index_channel_web_widgets_on_website_token", unique: true
   end
@@ -743,8 +747,8 @@ ActiveRecord::Schema[7.1].define(version: 2026_08_14_000000) do
     t.jsonb "phone_number_health", default: {}, null: false
     t.datetime "phone_number_health_checked_at"
     t.string "phone_number_health_error", limit: 500
-    t.index ["phone_number_health_checked_at"], name: "index_channel_whatsapp_on_phone_number_health_checked_at"
     t.index ["phone_number"], name: "index_channel_whatsapp_on_phone_number", unique: true
+    t.index ["phone_number_health_checked_at"], name: "index_channel_whatsapp_on_phone_number_health_checked_at"
   end
 
   create_table "companies", force: :cascade do |t|
@@ -1084,10 +1088,82 @@ ActiveRecord::Schema[7.1].define(version: 2026_08_14_000000) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.integer "inbox_id"
-    t.index ["account_id", "name", "template_type", "locale"], name: "index_email_templates_on_account_scope", unique: true, where: "(account_id IS NOT NULL) AND (inbox_id IS NULL)"
+    t.index ["account_id", "name", "template_type", "locale"], name: "index_email_templates_on_account_scope", unique: true, where: "((account_id IS NOT NULL) AND (inbox_id IS NULL))"
     t.index ["inbox_id", "name", "template_type", "locale"], name: "index_email_templates_on_inbox_scope", unique: true, where: "(inbox_id IS NOT NULL)"
     t.index ["inbox_id"], name: "index_email_templates_on_inbox_id"
-    t.index ["name", "template_type", "locale"], name: "index_email_templates_on_installation_scope", unique: true, where: "(account_id IS NULL) AND (inbox_id IS NULL)"
+    t.index ["name", "template_type", "locale"], name: "index_email_templates_on_installation_scope", unique: true, where: "((account_id IS NULL) AND (inbox_id IS NULL))"
+  end
+
+  create_table "flow_inboxes", force: :cascade do |t|
+    t.bigint "account_id", null: false
+    t.bigint "flow_id", null: false
+    t.bigint "inbox_id", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["account_id"], name: "index_flow_inboxes_on_account_id"
+    t.index ["flow_id", "inbox_id"], name: "index_flow_inboxes_on_flow_id_and_inbox_id", unique: true
+    t.index ["flow_id"], name: "index_flow_inboxes_on_flow_id"
+    t.index ["inbox_id"], name: "index_flow_inboxes_on_inbox_id"
+  end
+
+  create_table "flow_session_steps", force: :cascade do |t|
+    t.bigint "account_id", null: false
+    t.bigint "flow_session_id", null: false
+    t.string "node_id", null: false
+    t.string "node_type", null: false
+    t.jsonb "metadata", default: {}, null: false
+    t.datetime "created_at", null: false
+    t.index ["account_id"], name: "index_flow_session_steps_on_account_id"
+    t.index ["flow_session_id", "created_at"], name: "index_flow_session_steps_on_flow_session_id_and_created_at"
+    t.index ["flow_session_id"], name: "index_flow_session_steps_on_flow_session_id"
+  end
+
+  create_table "flow_sessions", force: :cascade do |t|
+    t.bigint "account_id", null: false
+    t.bigint "conversation_id", null: false
+    t.bigint "flow_id", null: false
+    t.bigint "flow_version_id", null: false
+    t.integer "status", default: 0, null: false
+    t.string "current_node_id"
+    t.bigint "awaiting_message_id"
+    t.jsonb "variables", default: {}, null: false
+    t.datetime "resume_at"
+    t.datetime "ended_at"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["account_id"], name: "index_flow_sessions_on_account_id"
+    t.index ["conversation_id"], name: "index_flow_sessions_on_active_conversation", unique: true, where: "(status = 0)"
+    t.index ["conversation_id"], name: "index_flow_sessions_on_conversation_id"
+    t.index ["flow_id"], name: "index_flow_sessions_on_flow_id"
+    t.index ["flow_version_id"], name: "index_flow_sessions_on_flow_version_id"
+    t.index ["resume_at"], name: "index_flow_sessions_on_due_resume_at", where: "((status = 0) AND (resume_at IS NOT NULL))"
+  end
+
+  create_table "flow_versions", force: :cascade do |t|
+    t.bigint "account_id", null: false
+    t.bigint "flow_id", null: false
+    t.integer "version", null: false
+    t.jsonb "definition", default: {}, null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["account_id"], name: "index_flow_versions_on_account_id"
+    t.index ["flow_id", "version"], name: "index_flow_versions_on_flow_id_and_version", unique: true
+    t.index ["flow_id"], name: "index_flow_versions_on_flow_id"
+  end
+
+  create_table "flows", force: :cascade do |t|
+    t.bigint "account_id", null: false
+    t.string "name", null: false
+    t.text "description"
+    t.string "trigger_type", null: false
+    t.boolean "active", default: false, null: false
+    t.jsonb "draft_definition", default: {}, null: false
+    t.bigint "published_version_id"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.integer "cooldown_minutes"
+    t.index ["account_id", "trigger_type", "active"], name: "index_flows_on_account_id_and_trigger_type_and_active"
+    t.index ["account_id"], name: "index_flows_on_account_id"
   end
 
   create_table "folders", force: :cascade do |t|
@@ -1596,6 +1672,19 @@ ActiveRecord::Schema[7.1].define(version: 2026_08_14_000000) do
   add_foreign_key "campaign_recipients", "campaigns", on_delete: :cascade
   add_foreign_key "campaign_recipients", "contacts", on_delete: :cascade
   add_foreign_key "campaign_recipients", "inboxes", on_delete: :cascade
+  add_foreign_key "flow_inboxes", "accounts", on_delete: :cascade
+  add_foreign_key "flow_inboxes", "flows", on_delete: :cascade
+  add_foreign_key "flow_inboxes", "inboxes", on_delete: :cascade
+  add_foreign_key "flow_session_steps", "accounts", on_delete: :cascade
+  add_foreign_key "flow_session_steps", "flow_sessions", on_delete: :cascade
+  add_foreign_key "flow_sessions", "accounts", on_delete: :cascade
+  add_foreign_key "flow_sessions", "conversations", on_delete: :cascade
+  add_foreign_key "flow_sessions", "flow_versions", on_delete: :cascade
+  add_foreign_key "flow_sessions", "flows", on_delete: :cascade
+  add_foreign_key "flow_versions", "accounts", on_delete: :cascade
+  add_foreign_key "flow_versions", "flows", on_delete: :cascade
+  add_foreign_key "flows", "accounts", on_delete: :cascade
+  add_foreign_key "flows", "flow_versions", column: "published_version_id", on_delete: :nullify
   add_foreign_key "inboxes", "portals"
   add_foreign_key "user_sessions", "users"
   create_trigger("accounts_after_insert_row_tr", :generated => true, :compatibility => 1).

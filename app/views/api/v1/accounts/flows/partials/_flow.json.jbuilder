@@ -1,0 +1,14 @@
+json.id flow.id
+json.account_id flow.account_id
+json.name flow.name
+json.description flow.description
+json.trigger_type flow.trigger_type
+json.active flow.active
+json.cooldown_minutes flow.cooldown_minutes
+json.inbox_ids flow.inbox_ids
+json.draft_definition flow.draft_definition
+json.published_version_id flow.published_version_id
+json.published_version_number flow.published_version&.version
+json.published_definition flow.published_version&.definition
+json.created_at flow.created_at
+json.updated_at flow.updated_at

@@ -2,23 +2,27 @@
 #
 # Table name: channel_web_widgets
 #
-#  id                    :integer          not null, primary key
-#  allowed_domains       :text             default("")
-#  continuity_via_email  :boolean          default(TRUE), not null
-#  feature_flags         :integer          default(7), not null
-#  hmac_mandatory        :boolean          default(FALSE)
-#  hmac_token            :string
-#  pre_chat_form_enabled :boolean          default(FALSE)
-#  pre_chat_form_options :jsonb
-#  reply_time            :integer          default("in_a_few_minutes")
-#  website_token         :string
-#  website_url           :string
-#  welcome_tagline       :string
-#  welcome_title         :string
-#  widget_color          :string           default("#1f93ff")
-#  created_at            :datetime         not null
-#  updated_at            :datetime         not null
-#  account_id            :integer
+#  id                       :integer          not null, primary key
+#  allowed_domains          :text             default("")
+#  announcement             :string
+#  announcement_link_target :string           default("new_tab"), not null
+#  announcement_url         :string
+#  continuity_via_email     :boolean          default(TRUE), not null
+#  display_name             :string
+#  feature_flags            :integer          default(7), not null
+#  hmac_mandatory           :boolean          default(FALSE)
+#  hmac_token               :string
+#  pre_chat_form_enabled    :boolean          default(FALSE)
+#  pre_chat_form_options    :jsonb
+#  reply_time               :integer          default("in_a_few_minutes")
+#  website_token            :string
+#  website_url              :string
+#  welcome_tagline          :string
+#  welcome_title            :string
+#  widget_color             :string           default("#1f93ff")
+#  created_at               :datetime         not null
+#  updated_at               :datetime         not null
+#  account_id               :integer
 #
 # Indexes
 #
@@ -32,16 +36,23 @@ class Channel::WebWidget < ApplicationRecord
 
   self.table_name = 'channel_web_widgets'
   EDITABLE_ATTRS = [:website_url, :widget_color, :welcome_title, :welcome_tagline, :reply_time, :pre_chat_form_enabled,
-                    :continuity_via_email, :hmac_mandatory, :allowed_domains,
+                    :continuity_via_email, :hmac_mandatory, :allowed_domains, :announcement, :announcement_url,
+                    :announcement_link_target, :display_name,
                     { pre_chat_form_options: [:pre_chat_message, :require_email,
                                               { pre_chat_fields:
                                                 [:field_type, :label, :placeholder, :name, :enabled, :type, :enabled, :required,
                                                  :locale, { values: [] }, :regex_pattern, :regex_cue] }] },
                     { selected_feature_flags: [] }].freeze
+  ANNOUNCEMENT_LINK_TARGETS = %w[new_tab current_tab].freeze
 
   before_validation :validate_pre_chat_options
   validates :website_url, presence: true
   validates :widget_color, presence: true
+  # The announcement link is rendered as an href in the visitor's browser, so anything but a real
+  # web address (javascript: chief among them) has to be rejected before it is stored.
+  validates :announcement_url, format: { with: %r{\Ahttps?://}, message: I18n.t('errors.inboxes.announcement_url.invalid') },
+                               allow_blank: true
+  validates :announcement_link_target, inclusion: { in: ANNOUNCEMENT_LINK_TARGETS }
   has_many :portals, foreign_key: 'channel_web_widget_id', dependent: :nullify, inverse_of: :channel_web_widget
 
   has_secure_token :website_token
@@ -59,6 +70,12 @@ class Channel::WebWidget < ApplicationRecord
 
   def name
     'Website'
+  end
+
+  # What the visitor is shown. The inbox name is an internal label the team picks for the
+  # dashboard, so a configured display name takes precedence everywhere the widget names itself.
+  def visitor_name
+    display_name.presence || inbox.name
   end
 
   def web_widget_script

@@ -22,6 +22,33 @@ export default {
       type: Object,
       default: () => {},
     },
+    // The gate modal collects contact details for a conversation that is already open, so it
+    // drops the message field and sizes itself to its content rather than filling the view.
+    formClass: {
+      type: String,
+      default: 'flex flex-col flex-1 w-full p-6 overflow-y-auto',
+    },
+    hideMessageField: {
+      type: Boolean,
+      default: false,
+    },
+    // The modal shows one placeholder-only field, so a label above it just repeats the text.
+    hideFieldLabels: {
+      type: Boolean,
+      default: false,
+    },
+    inputExtraClass: {
+      type: String,
+      default: '',
+    },
+    submitWrapperClass: {
+      type: String,
+      default: '',
+    },
+    submitLabel: {
+      type: String,
+      default: '',
+    },
   },
   emits: ['submitPreChat'],
   setup() {
@@ -148,13 +175,13 @@ export default {
       if (type === 'phoneInput') {
         this.hasErrorInPhoneInput = state.invalid;
       }
-      return 'mt-1 rounded w-full py-2 px-3';
+      return `mt-1 rounded w-full py-2 px-3 ${this.inputExtraClass}`.trim();
     },
     isContactFieldRequired(field) {
       return this.preChatFields.find(option => option.name === field).required;
     },
     getLabel({ label }) {
-      return label;
+      return this.hideFieldLabels ? undefined : label;
     },
     getPlaceHolder({ placeholder }) {
       return placeholder;
@@ -254,7 +281,7 @@ export default {
   <FormKit
     v-model="formValues"
     type="form"
-    form-class="flex flex-col flex-1 w-full p-6 overflow-y-auto"
+    :form-class="formClass"
     :incomplete-message="false"
     :submit-attrs="{
       inputClass: 'hidden',
@@ -302,7 +329,7 @@ export default {
       :has-error-in-phone-input="hasErrorInPhoneInput"
     />
     <FormKit
-      v-if="!hasActiveCampaign"
+      v-if="!hasActiveCampaign && !hideMessageField"
       name="message"
       type="textarea"
       label-class="text-sm font-medium text-n-slate-12"
@@ -315,16 +342,18 @@ export default {
       }"
     />
 
-    <CustomButton
-      class="mt-3 mb-5 font-medium flex items-center justify-center gap-2"
-      block
-      :bg-color="widgetColor"
-      :text-color="textColor"
-      :disabled="isCreatingConversation"
-    >
-      <Spinner v-if="isCreatingConversation" class="p-0" />
-      {{ $t('START_CONVERSATION') }}
-    </CustomButton>
+    <div :class="submitWrapperClass">
+      <CustomButton
+        class="mt-3 mb-5 font-medium flex items-center justify-center gap-2"
+        block
+        :bg-color="widgetColor"
+        :text-color="textColor"
+        :disabled="isCreatingConversation"
+      >
+        <Spinner v-if="isCreatingConversation" class="p-0" />
+        {{ submitLabel || $t('START_CONVERSATION') }}
+      </CustomButton>
+    </div>
   </FormKit>
 </template>
 

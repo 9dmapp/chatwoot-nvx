@@ -1,6 +1,8 @@
 :root {
   --b-100: #f2f3f7;
   --s-700: #37546d;
+  /* Extra distance from the bottom of the page, set by the SDK from bubbleBottomOffset. */
+  --cw-bubble-offset: 0px;
 }
 
 .woot-widget-holder {
@@ -34,7 +36,7 @@
   border-radius: 0 !important;
   min-height: 80px !important;
   height: auto;
-  bottom: 94px;
+  bottom: calc(94px + var(--cw-bubble-offset));
   box-shadow: none !important;
   border: 0;
 }
@@ -43,7 +45,7 @@
   background: #1f93ff;
   border-radius: 100px;
   border-width: 0px;
-  bottom: 20px;
+  bottom: calc(20px + var(--cw-bubble-offset));
   box-shadow: 0 8px 24px rgba(0, 0, 0, 0.16) !important;
   cursor: pointer;
   height: 64px;
@@ -65,7 +67,7 @@
 }
 
 .woot-widget-holder.woot-widget-holder--flat {
-  bottom: 90px;
+  bottom: calc(90px + var(--cw-bubble-offset));
 }
 
 .woot-widget-bubble.woot-widget-bubble--flat {
@@ -97,7 +99,7 @@
 }
 
 .woot-widget-bubble.woot-widget--expanded {
-  bottom: 24px;
+  bottom: calc(24px + var(--cw-bubble-offset));
   display: flex;
   height: 48px !important;
   width: auto !important;
@@ -136,6 +138,43 @@
   height: 20px !important;
   margin: 14px 8px 14px 16px !important;
   width: 20px !important;
+}
+
+/*
+ * The box launcher is a tab pinned flush against the side of the viewport: portrait, so it takes
+ * a sliver of the edge rather than a slab of the corner, with the label set vertically and the
+ * icon under it. Only the inner corners are rounded — the outer edge meets the viewport.
+ */
+.woot-widget-bubble.woot-widget--expanded.woot-widget--box {
+  align-items: center;
+  flex-direction: column-reverse;
+  height: auto !important;
+  justify-content: center;
+  padding: 12px 0;
+  width: 30px !important;
+}
+
+.woot-widget-bubble.woot-widget--box.woot-elements--right {
+  border-radius: 12px 0 0 12px;
+  right: 0;
+}
+
+.woot-widget-bubble.woot-widget--box.woot-elements--left {
+  border-radius: 0 12px 12px 0;
+  left: 0;
+}
+
+.woot-widget-bubble.woot-widget--expanded.woot-widget--box div {
+  font-size: 12px;
+  letter-spacing: 0.02em;
+  padding-right: 0;
+  writing-mode: vertical-rl;
+}
+
+.woot-widget-bubble.woot-widget--expanded.woot-widget--box svg {
+  height: 14px !important;
+  margin: 8px 0 0 !important;
+  width: 14px !important;
 }
 
 .woot-widget-bubble.woot-elements--left {
@@ -210,7 +249,7 @@
 }
 
 .woot-widget--without-bubble {
-  bottom: 20px !important;
+  bottom: calc(20px + var(--cw-bubble-offset)) !important;
 }
 .woot-widget-holder.woot--hide {
   transform: translateY(40px);
@@ -341,8 +380,10 @@
 @media only screen and (min-width: 667px) {
   .woot-widget-holder {
     border-radius: 16px;
-    bottom: 104px;
-    height: calc(90% - 64px - 20px);
+    bottom: calc(104px + var(--cw-bubble-offset));
+    /* The offset lifts the panel, so take it off the height as well and the top edge stays put
+       instead of being pushed off the screen on short viewports. */
+    height: calc(90% - 64px - 20px - var(--cw-bubble-offset));
     max-height: 640px !important;
     min-height: 250px !important;
     width: 400px !important;

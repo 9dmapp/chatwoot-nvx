@@ -17,29 +17,24 @@ export const createTemporaryMessage = ({ attachments, content, replyTo }) => {
 
 const getSenderName = message => (message.sender ? message.sender.name : '');
 
-const shouldShowAvatar = (message, nextMessage) => {
-  const currentSender = getSenderName(message);
-  const nextSender = getSenderName(nextMessage);
+const startsNewGroup = (message, previousMessage) => {
+  if (!previousMessage) return true;
 
   return (
-    currentSender !== nextSender ||
-    message.message_type !== nextMessage.message_type ||
-    isASubmittedFormMessage(nextMessage)
+    getSenderName(message) !== getSenderName(previousMessage) ||
+    message.message_type !== previousMessage.message_type ||
+    isASubmittedFormMessage(previousMessage)
   );
 };
 
+// The avatar and sender name mark the *start* of a run of messages from one sender, so a flow
+// that sends four bubbles at once introduces itself before the visitor reads them rather than
+// after.
 export const groupConversationBySender = conversationsForADate =>
   conversationsForADate.map((message, index) => {
-    let showAvatar;
-    const isLastMessage = index === conversationsForADate.length - 1;
-    if (isASubmittedFormMessage(message)) {
-      showAvatar = false;
-    } else if (isLastMessage) {
-      showAvatar = true;
-    } else {
-      const nextMessage = conversationsForADate[index + 1];
-      showAvatar = shouldShowAvatar(message, nextMessage);
-    }
+    const showAvatar =
+      !isASubmittedFormMessage(message) &&
+      startsNewGroup(message, conversationsForADate[index - 1]);
     return { showAvatar, ...message };
   });
 

@@ -4,35 +4,15 @@
 
 .conversation-wrap {
   .agent-message {
-    @apply items-end flex flex-row justify-start mt-0 ltr:mr-0 rtl:mr-2 mb-0.5 ltr:ml-2 rtl:ml-0 max-w-[88%];
+    @apply items-start flex flex-row justify-start mt-0 ltr:mr-0 rtl:mr-2 mb-0.5 ltr:ml-2 rtl:ml-0 max-w-[88%];
 
     .avatar-wrap {
       @apply flex-shrink-0 h-6 w-6;
-
-      .user-thumbnail-box {
-        @apply -mt-8;
-      }
     }
 
     .message-wrap {
       @apply flex-grow flex-shrink-0 ltr:ml-2 rtl:mr-2 max-w-[90%];
     }
-  }
-
-  &.is-typing .messages-wrap div:last-child {
-    .agent-message {
-      .agent-name {
-        display: none;
-      }
-
-      .user-thumbnail-box {
-        margin-top: 0;
-      }
-    }
-  }
-
-  .agent-name {
-    @apply text-xs font-medium my-2 ltr:pl-0.5 rtl:pr-0.5;
   }
 
   .has-attachment {
@@ -50,10 +30,6 @@
   .agent-message-wrap {
     + .agent-message-wrap {
       @apply mt-0.5;
-
-      .agent-message .chat-bubble {
-        @apply ltr:rounded-tl-[0.25rem] rtl:rounded-tr-[0.25rem];
-      }
     }
 
     + .user-message-wrap {
@@ -62,10 +38,6 @@
 
     &.has-response + .user-message-wrap {
       @apply mt-0.5;
-
-      .chat-bubble {
-        @apply ltr:rounded-tr-[0.25rem] rtl:rounded-tl-[0.25rem];
-      }
     }
 
     &.has-response + .agent-message-wrap {
@@ -106,10 +78,6 @@
   .user-message-wrap {
     + .user-message-wrap {
       @apply mt-0.5;
-
-      .user-message .chat-bubble {
-        @apply ltr:rounded-tr-[0.25rem] rtl:rounded-tl-[0.25rem];
-      }
     }
 
     + .agent-message-wrap {
@@ -135,37 +103,11 @@
     .chat-bubble {
       @apply border border-solid border-n-slate-5 dark:border-n-slate-11/50 text-n-black;
     }
-
-    + .chat-bubble-wrap {
-      .chat-bubble {
-        @apply ltr:rounded-tl-[0.25rem] rtl:rounded-tr-[0.25rem];
-      }
-    }
-
-    &:last-child .chat-bubble {
-      @apply ltr:rounded-bl-[1.25rem] rtl:rounded-br-[1.25rem];
-    }
   }
 }
 
 .is-widget-right .unread-wrap {
   @apply ltr:text-right rtl:text-left overflow-hidden;
-
-  .chat-bubble-wrap {
-    .chat-bubble {
-      @apply ltr:rounded-br-[0.25rem] rtl:rounded-bl-[0.25rem] rounded-[1.25rem];
-    }
-
-    + .chat-bubble-wrap {
-      .chat-bubble {
-        @apply ltr:rounded-tr-[0.25rem] rtl:rounded-tl-[0.25rem];
-      }
-    }
-
-    &:last-child .chat-bubble {
-      @apply ltr:rounded-br-[1.25rem] rtl:rounded-bl-[1.25rem];
-    }
-  }
 
   .close-unread-wrap {
     text-align: right;
@@ -173,7 +115,7 @@
 }
 
 .chat-bubble {
-  @apply shadow-[0_0.25rem_6px_rgba(50,50,93,0.08),0_1px_3px_rgba(0,0,0,0.05)] rounded-[1.25rem] inline-block text-sm leading-[1.5] max-w-full ltr:text-left rtl:text-right py-3 px-4 text-white;
+  @apply shadow-[0_0.25rem_6px_rgba(50,50,93,0.08),0_1px_3px_rgba(0,0,0,0.05)] rounded-[0.45rem] inline-block text-sm leading-[1.5] max-w-full ltr:text-left rtl:text-right py-3 px-4 text-white;
 
   word-break: break-word;
 
@@ -191,15 +133,13 @@
   }
 
   &.user {
-    @apply ltr:rounded-br-[0.25rem] rtl:rounded-bl-[0.25rem];
-
     > a {
       @apply text-white;
     }
   }
 
   &.agent {
-    @apply ltr:rounded-bl-[0.25rem] rtl:rounded-br-[0.25rem] text-n-slate-12;
+    @apply text-n-slate-12;
 
     .link {
       @apply text-n-brand;

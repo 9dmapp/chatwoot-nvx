@@ -273,3 +273,7 @@
   display_name: Delayed Automations
   enabled: false
   column: feature_flags_ext_1
+- name: flows
+  display_name: Chat Flows
+  enabled: false
+  column: feature_flags_ext_1

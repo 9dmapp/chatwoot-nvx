@@ -7,7 +7,6 @@ import ImageBubble from 'widget/components/ImageBubble.vue';
 import VideoBubble from 'widget/components/VideoBubble.vue';
 import FileBubble from 'widget/components/FileBubble.vue';
 import Avatar from 'dashboard/components-next/avatar/Avatar.vue';
-import { MESSAGE_TYPE } from 'widget/helpers/constants';
 import configMixin from '../mixins/configMixin';
 import messageMixin from '../mixins/messageMixin';
 import { isASubmittedFormMessage } from 'shared/helpers/MessageTypeHelper';
@@ -67,37 +66,13 @@ export default {
       const { content_type: type = '' } = this.message;
       return type;
     },
+    // Every bubble is attributed to the channel, not to whichever agent or bot happens to
+    // answer: the visitor is talking to one persona for the whole conversation.
     agentName() {
-      if (this.message.sender) {
-        return this.message.sender.available_name || this.message.sender.name;
-      }
-
-      if (this.message.additional_attributes?.sender_name) {
-        return this.message.additional_attributes.sender_name;
-      }
-
-      if (this.useInboxAvatarForBot) {
-        return this.channelConfig.websiteName;
-      }
-
-      return this.$t('UNREAD_VIEW.BOT');
+      return this.channelConfig.websiteName || this.$t('UNREAD_VIEW.BOT');
     },
     avatarUrl() {
-      const displayImage = this.useInboxAvatarForBot
-        ? this.inboxAvatarUrl
-        : '/assets/images/chatwoot_bot.png';
-
-      if (this.message.message_type === MESSAGE_TYPE.TEMPLATE) {
-        return displayImage;
-      }
-
-      if (this.message.sender) {
-        return this.message.sender.avatar_url;
-      }
-
-      return (
-        this.message.additional_attributes?.sender_avatar_url || displayImage
-      );
+      return this.inboxAvatarUrl;
     },
     hasRecordedResponse() {
       return (
@@ -173,15 +148,13 @@ export default {
   >
     <div v-if="!isASubmittedForm" class="agent-message">
       <div class="avatar-wrap">
-        <div class="user-thumbnail-box">
-          <Avatar
-            v-if="message.showAvatar || hasRecordedResponse"
-            :src="avatarUrl"
-            :size="24"
-            :name="agentName"
-            rounded-full
-          />
-        </div>
+        <Avatar
+          v-if="message.showAvatar || hasRecordedResponse"
+          :src="avatarUrl"
+          :size="24"
+          :name="agentName"
+          rounded-full
+        />
       </div>
       <div class="message-wrap">
         <div v-if="hasReplyTo" class="flex mt-2 mb-1 text-xs">
@@ -246,12 +219,6 @@ export default {
             />
           </div>
         </div>
-        <p
-          v-if="message.showAvatar || hasRecordedResponse"
-          class="agent-name text-n-slate-11"
-        >
-          {{ agentName }}
-        </p>
       </div>
     </div>
 

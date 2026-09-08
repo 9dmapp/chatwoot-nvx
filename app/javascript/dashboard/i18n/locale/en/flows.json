@@ -1,0 +1,131 @@
+{
+  "FLOWS": {
+    "HEADER": "Flows",
+    "DESCRIPTION": "Build chat automations that reply, ask questions, branch on the answer and hand over to a human.",
+    "LOADING": "Loading flows",
+    "LIST": {
+      "404": "There are no flows yet. Create one to automate a conversation.",
+      "NEW": "New flow",
+      "CREATE": "Create",
+      "NAME": "Name",
+      "DRAFT": "Draft",
+      "LIVE": "Live",
+      "PAUSED": "Paused",
+      "PAUSE": "Pause",
+      "ACTIVATE": "Activate",
+      "VERSION": "Version {version}",
+      "DELETE": "Delete",
+      "DELETE_TITLE": "Delete flow",
+      "DELETE_DESCRIPTION": "{name} will be deleted along with its versions. Conversations already running it will stop.",
+      "DELETE_SUCCESS": "Flow deleted",
+      "DELETE_ERROR": "Could not delete the flow",
+      "CREATE_ERROR": "Could not create the flow",
+      "TOGGLE_ERROR": "Could not change the flow status",
+      "ALL_INBOXES": "No inbox"
+    },
+    "TRIGGER_TYPES": {
+      "CONVERSATION_CREATED": "When a conversation starts",
+      "MESSAGE_CREATED": "When a message arrives",
+      "WEBWIDGET_TRIGGERED": "When the visitor opens the chat"
+    },
+    "NODE_TYPES": {
+      "SEND_MESSAGE": "Send a message",
+      "QUICK_REPLIES": "Ask with buttons",
+      "COLLECT_INPUT": "Collect an answer",
+      "CONDITION": "Branch on a condition",
+      "DELAY": "Wait",
+      "ADD_LABEL": "Add labels",
+      "ASSIGN_TEAM": "Assign a team",
+      "ASSIGN_AGENT": "Assign an agent",
+      "CHANGE_STATUS": "Change status",
+      "HANDOFF": "Hand over to a human",
+      "END": "End the flow"
+    },
+    "STATUSES": {
+      "OPEN": "Open",
+      "PENDING": "Pending",
+      "RESOLVED": "Resolved",
+      "SNOOZED": "Snoozed"
+    },
+    "CONDITION_ATTRIBUTES": {
+      "STATUS": "Conversation status",
+      "PRIORITY": "Priority",
+      "INBOX_ID": "Inbox",
+      "LABELS": "Labels",
+      "CONTENT": "Message content",
+      "BROWSER_LANGUAGE": "Browser language",
+      "COUNTRY_CODE": "Country",
+      "CITY": "City",
+      "EMAIL": "Email",
+      "PHONE_NUMBER": "Phone number",
+      "COMPANY_NAME": "Company"
+    },
+    "CONDITION_OPERATORS": {
+      "EQUAL_TO": "is",
+      "NOT_EQUAL_TO": "is not",
+      "CONTAINS": "contains",
+      "DOES_NOT_CONTAIN": "does not contain",
+      "STARTS_WITH": "starts with",
+      "IS_PRESENT": "is present",
+      "IS_NOT_PRESENT": "is not present",
+      "AND": "and",
+      "OR": "or"
+    },
+    "EDITOR": {
+      "ADD_NODE": "Add a step",
+      "ENTRY_CONDITIONS": "Entry conditions",
+      "ENTRY_CONDITIONS_HINT": "Leave empty to run for every trigger. A conversation only ever enters one flow at a time.",
+      "TIDY": "Tidy layout",
+      "SAVE_DRAFT": "Save draft",
+      "PUBLISH": "Publish",
+      "SAVED": "Draft saved",
+      "SAVE_ERROR": "Could not save the draft",
+      "PUBLISHED": "Published version {version}",
+      "PUBLISH_ERROR": "Could not publish the flow",
+      "LIVE_VERSION": "Live: v{version}",
+      "NEVER_PUBLISHED": "Never published",
+      "UNPUBLISHED_CHANGES": "This draft differs from the published version. Conversations keep running the published one until you publish again.",
+      "EMPTY": "Add a step from the left to start building.",
+      "NODE": {
+        "START": "Start",
+        "DELAY_SUMMARY": "Wait {minutes} minutes",
+        "CONDITION_SUMMARY": "{count} condition(s)"
+      },
+      "INSPECTOR": {
+        "CONTENT": "Message",
+        "CONTENT_PLACEHOLDER": "What should the bot say?",
+        "VARIABLE_HINT": "Use {'{{'}name{'}}'} to insert an answer collected earlier.",
+        "CHANNEL_LIMIT_HINT": "Reply buttons branch the flow. WhatsApp shows at most 3, Facebook 13. Link buttons open in a new tab and only render on the web widget.",
+        "VARIABLE": "Store answer as",
+        "INPUT_FREE_TEXT": "Any reply",
+        "INPUT_EMAIL": "Email prompt",
+        "CONDITIONS": "Conditions",
+        "ADD_CONDITION": "Add condition",
+        "VALUES_PLACEHOLDER": "Comma separated values",
+        "DELAY_MINUTES": "Wait for (minutes)",
+        "LABELS": "Labels",
+        "LABELS_PLACEHOLDER": "billing, urgent",
+        "ADD_TIMEOUT": "Add a timeout",
+        "REMOVE_TIMEOUT": "Remove timeout",
+        "TIMEOUT_MINUTES": "Timeout after (minutes)",
+        "TIMEOUT_HINT": "If the visitor does not reply in time, the flow takes the Timeout branch.",
+        "MAKE_START": "Make this the first step",
+        "DELETE_NODE": "Delete step",
+        "START_LOCKED": "Pick another first step before deleting this one.",
+        "BUTTONS": "Buttons",
+        "BUTTON_TITLE": "Button label",
+        "BUTTON_VALUE": "Value",
+        "ADD_BUTTON": "Add button",
+        "IMAGE_URL": "Image URL"
+      },
+      "INBOXES": "Inboxes",
+      "INBOXES_SEARCH": "Search inboxes",
+      "NO_INBOX": "This flow is not attached to an inbox yet. Pick at least one before activating it.",
+      "COOLDOWN": "Cooldown (min)"
+    },
+    "BUTTON_TYPES": {
+      "REPLY": "Reply (branches the flow)",
+      "LINK": "Link (opens a URL)"
+    }
+  }
+}

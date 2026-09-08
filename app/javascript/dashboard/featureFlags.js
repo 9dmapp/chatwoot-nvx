@@ -14,6 +14,7 @@ export const FEATURE_FLAGS = {
   CUSTOM_ATTRIBUTES: 'custom_attributes',
   DATA_IMPORT: 'data_import',
   DELAYED_AUTOMATIONS: 'delayed_automations',
+  FLOWS: 'flows',
   API_AND_WEBHOOKS: 'api_and_webhooks',
   INBOX_MANAGEMENT: 'inbox_management',
   INTEGRATIONS: 'integrations',

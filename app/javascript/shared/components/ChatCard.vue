@@ -28,9 +28,10 @@ export default {
 
 <template>
   <div
-    class="card-message chat-bubble agent bg-n-background dark:bg-n-solid-3 max-w-56 rounded-lg overflow-hidden"
+    class="card-message chat-bubble agent bg-n-background dark:bg-n-solid-3 max-w-56 rounded-[0.45rem] overflow-hidden"
   >
     <img
+      v-if="mediaUrl"
       class="w-full object-contain max-h-[150px] rounded-[5px]"
       :src="mediaUrl"
     />

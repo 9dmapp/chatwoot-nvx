@@ -146,4 +146,34 @@ export default {
 .message--loader {
   text-align: center;
 }
+
+/*
+ * Messages ease in as they are added. This is a keyframe animation rather than a Vue transition
+ * on purpose: the list re-renders in the same frame a message arrives (siblings shift and the
+ * view scrolls), so enter classes were being applied and swapped before the browser painted the
+ * start state, and the transition never ran. An animation is not sensitive to that timing.
+ */
+@keyframes message-in {
+  from {
+    opacity: 0;
+    transform: translateY(0.5rem);
+  }
+
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+.conversation-wrap :deep(.agent-message-wrap),
+.conversation-wrap :deep(.user-message-wrap) {
+  animation: message-in 0.22s ease-out both;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .conversation-wrap :deep(.agent-message-wrap),
+  .conversation-wrap :deep(.user-message-wrap) {
+    animation: none;
+  }
+}
 </style>

@@ -1,6 +1,7 @@
 import Cookies from 'js-cookie';
 import { IFrameHelper } from '../sdk/IFrameHelper';
 import {
+  getBubbleBottomOffset,
   getBubbleView,
   getDarkMode,
   getWidgetStyle,
@@ -66,6 +67,9 @@ const runSDK = ({ baseUrl, websiteToken }) => {
     locale,
     useBrowserLanguage: chatwootSettings.useBrowserLanguage || false,
     type: getBubbleView(chatwootSettings.type),
+    bubbleBottomOffset: getBubbleBottomOffset(
+      chatwootSettings.bubbleBottomOffset
+    ),
     launcherTitle: chatwootSettings.launcherTitle || '',
     showPopoutButton: chatwootSettings.showPopoutButton || false,
     showUnreadMessagesDialog: chatwootSettings.showUnreadMessagesDialog ?? true,

@@ -94,6 +94,10 @@ const hasFilteredUnreadCounts = computed(() => {
   );
 });
 
+const hasFlows = computed(() => {
+  return isFeatureEnabledonAccount.value(accountId.value, FEATURE_FLAGS.FLOWS);
+});
+
 const hasDataImport = computed(() => {
   return isFeatureEnabledonAccount.value(
     accountId.value,
@@ -875,6 +879,16 @@ const menuItems = computed(() => {
           icon: 'i-lucide-repeat',
           to: accountScopedRoute('automation_list'),
         },
+        ...(hasFlows.value
+          ? [
+              {
+                name: 'Settings Flows',
+                label: t('SIDEBAR.FLOWS'),
+                icon: 'i-lucide-workflow',
+                to: accountScopedRoute('flows_list'),
+              },
+            ]
+          : []),
         {
           name: 'Settings Agent Bots',
           label: t('SIDEBAR.AGENT_BOTS'),

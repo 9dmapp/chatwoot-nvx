@@ -2,6 +2,7 @@
 import { mapGetters, mapActions } from 'vuex';
 import { setHeader } from 'widget/helpers/axios';
 import addHours from 'date-fns/addHours';
+import { getContrastingTextColor } from '@chatwoot/utils';
 import { IFrameHelper, RNHelper } from 'widget/helpers/utils';
 import configMixin from './mixins/configMixin';
 import { getLocale } from './helpers/urlParamsHelper';
@@ -99,9 +100,16 @@ export default {
       this.registerListeners();
       this.sendLoadedEvent();
     } else {
-      this.fetchOldConversations();
       this.fetchAvailableAgents(websiteToken);
+      this.$store.dispatch('contacts/get');
       this.setLocale(getLocale(window.location.search));
+      // Standalone widget page: there is no parent frame to push the trigger event, and opening
+      // the page is the visitor opening the chat, so it is announced here instead. Deferred
+      // until the first fetch settles: anything the trigger creates is delivered over the
+      // socket, and a broadcast that lands before the widget subscribes is simply lost.
+      this.fetchOldConversations().then(() =>
+        this.$store.dispatch('events/create', { name: 'webwidget.triggered' })
+      );
     }
     if (this.isRNWebView) {
       this.registerListeners();
@@ -131,6 +139,28 @@ export default {
         document.documentElement.style.setProperty(
           '--widget-color',
           widgetColor
+        );
+        // A wash of the brand colour that fades out down the panel, so the widget reads as part
+        // of the product rather than a generic grey box. These are their own variables because
+        // the colour arrives at runtime and Tailwind cannot know it; the alpha suffixes assume
+        // the six-digit hex the colour picker always emits.
+        document.documentElement.style.setProperty(
+          '--widget-color-tint',
+          `${widgetColor}2b`
+        );
+        document.documentElement.style.setProperty(
+          '--widget-color-tint-fade',
+          `${widgetColor}00`
+        );
+        // The announcement island paints the brand colour at full strength, so it needs a
+        // softer end for the gradient and a text colour that survives a pale brand.
+        document.documentElement.style.setProperty(
+          '--widget-color-soft',
+          `${widgetColor}b3`
+        );
+        document.documentElement.style.setProperty(
+          '--widget-color-contrast',
+          getContrastingTextColor(widgetColor)
         );
       }
     },
@@ -176,6 +206,13 @@ export default {
         const { name: routeName } = this.$route;
         if ((this.isWidgetOpen || !this.isIFrame) && routeName === 'messages') {
           this.$store.dispatch('conversation/setUserLastSeen');
+        }
+        // A proactive message should land in front of the visitor rather than behind the home
+        // screen. The standalone page has no bubble at all, and an already-open widget would
+        // otherwise keep showing home. A closed widget still falls through to setUnreadView,
+        // which is what pulses the bubble.
+        if (routeName === 'home' && (!this.isIFrame || this.isWidgetOpen)) {
+          this.router.replace({ name: 'messages' });
         }
         this.setUnreadView();
       });

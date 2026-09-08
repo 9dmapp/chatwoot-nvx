@@ -44,21 +44,23 @@ export default {
 
 <template>
   <div
-    class="chat-bubble agent max-w-64 !py-2 !px-4 rounded-lg overflow-hidden mt-1 bg-n-background dark:bg-n-solid-3"
+    class="chat-bubble agent !p-0 w-64 rounded-[0.45rem] overflow-hidden mt-1 bg-n-background dark:bg-n-solid-3"
   >
-    <h4 class="text-n-slate-12 text-sm font-normal my-1 leading-[1.5]">
-      <div
-        v-dompurify-html="formatMessage(title, false)"
-        class="text-n-slate-12"
-      />
-    </h4>
-    <ul v-if="!hideFields" class="w-full">
+    <div
+      v-dompurify-html="formatMessage(title, false)"
+      class="px-4 py-3 text-sm font-normal leading-normal text-n-slate-12"
+    />
+    <!-- The choices run edge to edge under the prompt, divided rather than boxed, so they read
+      as the next step instead of as decorations attached to the text. -->
+    <ul
+      v-if="!hideFields"
+      class="flex flex-col w-full gap-1.5 p-3 border-t border-solid border-n-weak"
+    >
       <ChatOption
         v-for="option in options"
         :key="option.id"
         :action="option"
         :is-selected="isSelected(option)"
-        class="list-none p-0"
         @option-select="onClick"
       />
     </ul>

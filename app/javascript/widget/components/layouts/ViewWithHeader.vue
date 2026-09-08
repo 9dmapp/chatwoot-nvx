@@ -1,4 +1,5 @@
 <script>
+import AnnouncementBanner from '../AnnouncementBanner.vue';
 import Banner from '../Banner.vue';
 import Branding from 'shared/components/Branding.vue';
 import ChatHeader from '../ChatHeader.vue';
@@ -9,6 +10,7 @@ import { IFrameHelper } from 'widget/helpers/utils';
 
 export default {
   components: {
+    AnnouncementBanner,
     Banner,
     Branding,
     ChatHeader,
@@ -28,9 +30,15 @@ export default {
     ...mapGetters({
       appConfig: 'appConfig/getAppConfig',
       availableAgents: 'agent/availableAgents',
+      lastAgentSender: 'conversation/getLastAgentSender',
     }),
     portal() {
       return window.chatwootWebChannel.portal;
+    },
+    // A configured display name is the identity the visitor is meant to see, so it outranks
+    // whichever agent happens to be replying.
+    headerAgent() {
+      return this.channelConfig.displayName ? null : this.lastAgentSender;
     },
     isHeaderCollapsed() {
       if (!this.hasIntroText) {
@@ -107,7 +115,9 @@ export default {
     :class="{ 'overflow-auto': isOnHomeView }"
     @keydown.esc="closeWindow"
   >
-    <div class="relative flex flex-col h-full">
+    <div
+      class="relative flex flex-col h-full bg-gradient-to-b from-[var(--widget-color-tint)] to-[var(--widget-color-tint-fade)]"
+    >
       <div
         :class="{
           expanded: !isHeaderCollapsed,
@@ -133,10 +143,16 @@ export default {
           :show-popout-button="appConfig.showPopoutButton"
           :available-agents="availableAgents"
           :show-back-button="showBackButton"
+          :agent="headerAgent"
         />
       </div>
       <Banner />
-      <router-view />
+      <!-- The announcement floats over the view rather than sitting in the column, so it reads
+        as a pinned notice and does not shorten the conversation every time one is published. -->
+      <div class="relative flex flex-col flex-1 min-h-0">
+        <AnnouncementBanner />
+        <router-view />
+      </div>
 
       <Branding v-if="!isOnArticleViewer" :disable-branding="disableBranding" />
     </div>
