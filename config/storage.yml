@@ -38,6 +38,11 @@ s3_compatible:
   bucket: <%= ENV.fetch('STORAGE_BUCKET_NAME', '') %>
   endpoint: <%= ENV.fetch('STORAGE_ENDPOINT', '') %>
   force_path_style: <%= ENV.fetch('STORAGE_FORCE_PATH_STYLE', false) %>
+  # ActiveStorage sends Content-MD5 on upload, and aws-sdk-s3 adds a CRC32 checksum of its own to
+  # every request. Amazon S3 accepts the pair; Cloudflare R2 and other S3-compatible backends
+  # reject it with "You can only specify one non-default checksum at a time", so ask the SDK for a
+  # checksum only when the operation actually requires one.
+  request_checksum_calculation: when_required
 
 # mirror:
 #   service: Mirror
