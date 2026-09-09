@@ -45,7 +45,18 @@ class Api::V1::Accounts::UploadController < Api::V1::Accounts::BaseController
   end
 
   def render_success(file_blob)
-    render json: { file_url: url_for(file_blob), blob_id: file_blob.signed_id }
+    render json: { file_url: public_url_for(file_blob), blob_id: file_blob.signed_id }
+  end
+
+  # Everything uploaded here ends up embedded in content the public already reads - help centre
+  # articles, portal logos, flow images in the live-chat widget - and the Rails URL this used to
+  # return was itself unauthenticated and permanent. Serving from the storage CDN keeps that
+  # contract and takes Rails out of the path on every view.
+  def public_url_for(blob)
+    cdn_url = ENV.fetch('STORAGE_CDN_URL', '')
+    return url_for(blob) if cdn_url.blank?
+
+    "#{cdn_url.chomp('/')}/#{blob.key}"
   end
 
   def render_error(message, status)
