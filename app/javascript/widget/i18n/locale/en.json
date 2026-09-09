@@ -161,5 +161,9 @@
   },
   "ANNOUNCEMENT": {
     "DISMISS": "Dismiss announcement"
+  },
+  "IMAGE_VIEWER": {
+    "CLOSE": "Close image",
+    "OPEN_ORIGINAL": "Open original"
   }
 }

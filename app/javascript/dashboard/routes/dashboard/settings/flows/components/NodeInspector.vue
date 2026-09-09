@@ -1,6 +1,8 @@
 <script setup>
-import { computed } from 'vue';
+import { computed, ref } from 'vue';
 import { useI18n } from 'vue-i18n';
+import { useRoute } from 'vue-router';
+import { uploadFile } from 'dashboard/helper/uploadHelper';
 import Input from 'dashboard/components-next/input/Input.vue';
 import Select from 'dashboard/components-next/select/Select.vue';
 import Button from 'dashboard/components-next/button/Button.vue';
@@ -28,6 +30,31 @@ const { t } = useI18n();
 
 const params = computed(() => props.node.params);
 const canTimeout = computed(() => waitsForVisitor(props.node));
+const route = useRoute();
+const fileInput = ref(null);
+const isUploading = ref(false);
+const uploadError = ref('');
+
+// Uploading beats asking someone to find a public URL for an image they already have. The file
+// goes through the account's configured storage, so wherever attachments live, these live too.
+const onPickImage = async event => {
+  const file = event.target.files?.[0];
+  event.target.value = '';
+  if (!file) return;
+
+  uploadError.value = '';
+  isUploading.value = true;
+  try {
+    const { fileUrl } = await uploadFile(file, route.params.accountId);
+    params.value.image_url = fileUrl;
+  } catch (error) {
+    uploadError.value =
+      error?.response?.data?.error ||
+      t('FLOWS.EDITOR.INSPECTOR.IMAGE_UPLOAD_FAILED');
+  } finally {
+    isUploading.value = false;
+  }
+};
 const isMessage = computed(() =>
   ['send_message', 'quick_replies'].includes(props.node.type)
 );
@@ -121,11 +148,52 @@ const timeoutMinutes = computed({
     </template>
 
     <template v-if="isMessage">
-      <Input
-        v-model="params.image_url"
-        :label="t('FLOWS.EDITOR.INSPECTOR.IMAGE_URL')"
-        placeholder="https://…"
-      />
+      <div class="flex flex-col gap-2">
+        <Input
+          v-model="params.image_url"
+          :label="t('FLOWS.EDITOR.INSPECTOR.IMAGE_URL')"
+          placeholder="https://…"
+        />
+        <div class="flex items-center gap-2">
+          <Button
+            :label="
+              isUploading
+                ? t('FLOWS.EDITOR.INSPECTOR.IMAGE_UPLOADING')
+                : t('FLOWS.EDITOR.INSPECTOR.IMAGE_UPLOAD')
+            "
+            icon="i-lucide-upload"
+            size="sm"
+            variant="faded"
+            :disabled="isUploading"
+            @click="fileInput?.click()"
+          />
+          <Button
+            v-if="params.image_url"
+            icon="i-lucide-x"
+            size="sm"
+            variant="faded"
+            color="ruby"
+            :label="t('FLOWS.EDITOR.INSPECTOR.IMAGE_REMOVE')"
+            @click="params.image_url = ''"
+          />
+        </div>
+        <input
+          ref="fileInput"
+          type="file"
+          accept="image/png,image/jpeg,image/gif,image/webp"
+          class="hidden"
+          @change="onPickImage"
+        />
+        <img
+          v-if="params.image_url"
+          :src="params.image_url"
+          alt=""
+          class="object-contain w-full rounded max-h-32 bg-n-alpha-1"
+        />
+        <p v-if="uploadError" class="text-xs text-n-ruby-11">
+          {{ uploadError }}
+        </p>
+      </div>
 
       <div class="flex flex-col gap-2">
         <span class="text-sm text-n-slate-12">

@@ -1,11 +1,17 @@
 <script>
+import ImageViewer from 'widget/components/ImageViewer.vue';
+
 export default {
+  components: { ImageViewer },
   props: {
     url: { type: String, default: '' },
     thumb: { type: String, default: '' },
     readableTime: { type: String, default: '' },
   },
   emits: ['error'],
+  data() {
+    return { isViewerOpen: false };
+  },
   methods: {
     onImgError() {
       this.$emit('error');
@@ -15,22 +21,18 @@ export default {
 </script>
 
 <template>
-  <a
-    :href="url"
-    target="_blank"
-    rel="noreferrer noopener nofollow"
-    class="image"
-  >
+  <button type="button" class="image" @click="isViewerOpen = true">
     <div class="wrap">
       <img :src="thumb" alt="Picture message" @error="onImgError" />
       <span class="time">{{ readableTime }}</span>
     </div>
-  </a>
+  </button>
+  <ImageViewer v-if="isViewerOpen" :url="url" @close="isViewerOpen = false" />
 </template>
 
 <style lang="scss" scoped>
 .image {
-  display: block;
+  @apply block cursor-zoom-in p-0 bg-transparent border-0 w-full;
 
   .wrap {
     position: relative;

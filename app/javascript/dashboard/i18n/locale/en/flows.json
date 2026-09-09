@@ -116,7 +116,11 @@
         "BUTTON_TITLE": "Button label",
         "BUTTON_VALUE": "Value",
         "ADD_BUTTON": "Add button",
-        "IMAGE_URL": "Image URL"
+        "IMAGE_URL": "Image URL",
+        "IMAGE_UPLOAD": "Upload image",
+        "IMAGE_UPLOADING": "Uploading…",
+        "IMAGE_REMOVE": "Remove",
+        "IMAGE_UPLOAD_FAILED": "Upload failed. Please try again."
       },
       "INBOXES": "Inboxes",
       "INBOXES_SEARCH": "Search inboxes",
