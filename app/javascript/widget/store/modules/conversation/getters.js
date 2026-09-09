@@ -33,6 +33,21 @@ export const getters = {
       messages: groupConversationBySender(conversationGroupedByDate[date]),
     }));
   },
+  // The person the visitor is actually talking to. The widget is never told the assignee, so the
+  // most recent message that carries a sender is the closest truthful answer.
+  getLastAgentSender: _state => {
+    const agentMessages = Object.values(_state.conversations).filter(
+      message =>
+        message.message_type === MESSAGE_TYPE.OUTGOING && message.sender
+    );
+    return agentMessages.length
+      ? agentMessages[agentMessages.length - 1].sender
+      : null;
+  },
+  getHasVisitorMessages: _state =>
+    Object.values(_state.conversations).some(
+      message => message.message_type === MESSAGE_TYPE.INCOMING
+    ),
   getPendingCustomAttributes: _state => _state.pendingCustomAttributes,
   getPendingLabels: _state => _state.pendingLabels,
   getIsFetchingList: _state => _state.uiFlags.isFetchingList,

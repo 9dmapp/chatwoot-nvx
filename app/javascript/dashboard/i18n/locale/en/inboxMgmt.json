@@ -87,6 +87,10 @@
         "CHANNEL_AVATAR": {
           "LABEL": "Channel Avatar"
         },
+        "CHANNEL_DISPLAY_NAME": {
+          "LABEL": "Display Name",
+          "HELP_TEXT": "The name shown to visitors in the live chat, together with the avatar above. Leave empty to use the inbox name."
+        },
         "CHANNEL_WEBHOOK_URL": {
           "LABEL": "Webhook URL",
           "PLACEHOLDER": "Please enter your Webhook URL",
@@ -111,6 +115,20 @@
         "CHANNEL_WELCOME_TAGLINE": {
           "LABEL": "Welcome Tagline",
           "PLACEHOLDER": "We make it simple to connect with us. Ask us anything, or share your feedback."
+        },
+        "CHANNEL_ANNOUNCEMENT": {
+          "LABEL": "Announcement Bar",
+          "PLACEHOLDER": "Cash bonus of RM88 for every new sign-up this week.",
+          "HELP_TEXT": "A scrolling bar shown at the top of the live chat. Leave empty to hide it.",
+          "URL_LABEL": "Announcement Link",
+          "URL_PLACEHOLDER": "https://example.com/promotions",
+          "URL_HELP_TEXT": "Where the announcement bar takes the visitor when clicked.",
+          "URL_ERROR": "Please enter a URL starting with http:// or https://",
+          "URL_TARGET_LABEL": "Open Link In",
+          "URL_TARGET": {
+            "NEW_TAB": "New tab",
+            "CURRENT_TAB": "Current tab"
+          }
         },
         "CHANNEL_GREETING_MESSAGE": {
           "LABEL": "Channel greeting message",
@@ -1548,8 +1566,11 @@
         },
         "WIDGET_BUBBLE_TYPE": {
           "STANDARD": "Standard",
-          "EXPANDED_BUBBLE": "Expanded Bubble"
-        }
+          "EXPANDED_BUBBLE": "Expanded Bubble",
+          "BOX": "Box"
+        },
+        "WIDGET_BUBBLE_BOTTOM_OFFSET_LABEL": "Bottom offset",
+        "WIDGET_BUBBLE_BOTTOM_OFFSET_SUFFIX": "px"
       },
       "WIDGET_SCREEN": {
         "DEFAULT": "Default",

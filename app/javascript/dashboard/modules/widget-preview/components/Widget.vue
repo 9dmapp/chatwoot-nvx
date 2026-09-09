@@ -52,6 +52,10 @@ const props = defineProps({
     type: String,
     default: '',
   },
+  widgetBubbleBottomOffset: {
+    type: Number,
+    default: 0,
+  },
   webWidgetScript: {
     type: String,
     default: '',
@@ -89,6 +93,7 @@ const widgetScript = computed(() => {
     position: props.widgetBubblePosition,
     type: props.widgetBubbleType,
     launcherTitle: props.widgetBubbleLauncherTitle,
+    bubbleBottomOffset: props.widgetBubbleBottomOffset,
   };
 
   const script = props.webWidgetScript;
@@ -127,8 +132,14 @@ const getBubblePositionStyle = computed(() => ({
   justifyContent: props.widgetBubblePosition === 'left' ? 'start' : 'end',
 }));
 
+const isBubbleBox = computed(
+  () => !isWidgetVisible.value && props.widgetBubbleType === 'box'
+);
+
 const isBubbleExpanded = computed(
-  () => !isWidgetVisible.value && props.widgetBubbleType === 'expanded_bubble'
+  () =>
+    isBubbleBox.value ||
+    (!isWidgetVisible.value && props.widgetBubbleType === 'expanded_bubble')
 );
 
 const getWidgetBubbleLauncherTitle = computed(() =>
@@ -204,13 +215,15 @@ const handleToggleWidget = () => {
 
         <div class="flex w-[320px]" :style="getBubblePositionStyle">
           <button
-            class="relative flex items-center justify-center rounded-full cursor-pointer"
+            class="relative flex items-center justify-center cursor-pointer"
             :style="{ background: props.color }"
-            :class="
+            :class="[
+              isBubbleBox ? 'rounded-xl h-14' : 'rounded-full',
               isBubbleExpanded
-                ? 'w-auto font-medium text-base text-white dark:text-white h-12 px-4'
-                : 'w-16 h-16'
-            "
+                ? 'w-auto font-medium text-base text-white dark:text-white px-4'
+                : 'w-16 h-16',
+              isBubbleExpanded && !isBubbleBox ? 'h-12' : '',
+            ]"
             @click="handleToggleWidget"
           >
             <img

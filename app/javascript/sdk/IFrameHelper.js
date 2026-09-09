@@ -59,6 +59,10 @@ export const IFrameHelper = {
     }
 
     loadCSS();
+    document.documentElement.style.setProperty(
+      '--cw-bubble-offset',
+      `${window.$chatwoot.bubbleBottomOffset}px`
+    );
     const iframe = document.createElement('iframe');
     const cwCookie = Cookies.get('cw_conversation');
     let widgetUrl = IFrameHelper.getUrl({ baseUrl, websiteToken });

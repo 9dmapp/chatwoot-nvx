@@ -22,6 +22,9 @@ class TriggerScheduledItemsJob < ApplicationJob
 
     # Job to trigger pending executions
     AutomationRules::TriggerPendingExecutionsJob.perform_later
+
+    # Job to wake flow sessions whose delay or timeout is due
+    Flows::TriggerDueSessionsJob.perform_later
   end
 end
 

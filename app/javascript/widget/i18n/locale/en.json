@@ -20,7 +20,8 @@
   "TEAM_AVAILABILITY": {
     "ONLINE": "We are online",
     "OFFLINE": "We are away at the moment",
-    "BACK_AS_SOON_AS_POSSIBLE": "We will be back as soon as possible"
+    "BACK_AS_SOON_AS_POSSIBLE": "We will be back as soon as possible",
+    "STATUS_ONLINE": "Online"
   },
   "REPLY_TIME": {
     "IN_A_FEW_MINUTES": "Typically replies in a few minutes",
@@ -93,7 +94,10 @@
     "CAMPAIGN_HEADER": "Please provide your name and email before starting the conversation",
     "IS_REQUIRED": "is required",
     "REQUIRED": "Required",
-    "REGEX_ERROR": "Please provide a valid input"
+    "REGEX_ERROR": "Please provide a valid input",
+    "GATE_PROMPT": "Please fill in the information before starting the chat.",
+    "GATE_SUBMIT": "Send",
+    "GATE_CLOSE": "Close"
   },
   "FILE_SIZE_LIMIT": "File exceeds the {MAXIMUM_FILE_UPLOAD_SIZE} attachment limit",
   "CHAT_FORM": {
@@ -154,5 +158,8 @@
   },
   "FOOTER_REPLY_TO": {
     "REPLY_TO": "Replying to:"
+  },
+  "ANNOUNCEMENT": {
+    "DISMISS": "Dismiss announcement"
   }
 }

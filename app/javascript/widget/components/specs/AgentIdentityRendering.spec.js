@@ -1,4 +1,5 @@
 import { mount, shallowMount } from '@vue/test-utils';
+import Avatar from 'dashboard/components-next/avatar/Avatar.vue';
 import AgentMessage from '../AgentMessage.vue';
 import UnreadMessage from '../UnreadMessage.vue';
 
@@ -21,7 +22,7 @@ describe('agent identity rendering', () => {
     delete window.chatwootWebChannel;
   });
 
-  it('renders the agent name as plain text beside widget messages', () => {
+  it('never renders the channel name as markup in widget messages', () => {
     const wrapper = shallowMount(AgentMessage, {
       props: {
         message: {
@@ -39,11 +40,14 @@ describe('agent identity rendering', () => {
         },
       },
     });
-    const agentName = wrapper.find('.agent-name');
 
-    expect(agentName.text()).toBe(maliciousName);
-    expect(agentName.find('img').exists()).toBe(false);
-    expect(agentName.html()).toContain('&lt;img');
+    // Bubbles are attributed to the channel, not the agent, so it is the channel name that
+    // reaches the avatar. Passing it as a prop is what keeps it data rather than markup.
+    expect(wrapper.find('.agent-name').exists()).toBe(false);
+    expect(wrapper.find('img').exists()).toBe(false);
+    expect(wrapper.findComponent(Avatar).props('name')).toBe(
+      maliciousCompanyName
+    );
   });
 
   it('renders agent and company names as plain text in unread messages', () => {

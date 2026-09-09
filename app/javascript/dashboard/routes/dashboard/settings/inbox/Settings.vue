@@ -112,6 +112,10 @@ export default {
       webhookUrl: '',
       channelWelcomeTitle: '',
       channelWelcomeTagline: '',
+      channelAnnouncement: '',
+      channelAnnouncementUrl: '',
+      channelAnnouncementLinkTarget: 'new_tab',
+      channelDisplayName: '',
       selectedFeatureFlags: [],
       replyTime: '',
       selectedTabIndex: 0,
@@ -123,6 +127,7 @@ export default {
       isRegisteringWebhook: false,
       isTransferringWhatsAppToManual: false,
       widgetBubblePosition: 'right',
+      widgetBubbleBottomOffset: 0,
       widgetBubbleType: 'standard',
       widgetBubbleLauncherTitle: '',
     };
@@ -565,8 +570,13 @@ export default {
         this.inbox.allow_messages_after_resolved;
       this.continuityViaEmail = this.inbox.continuity_via_email;
       this.channelWebsiteUrl = this.inbox.website_url;
+      this.channelDisplayName = this.inbox.display_name || '';
       this.channelWelcomeTitle = this.inbox.welcome_title;
       this.channelWelcomeTagline = this.inbox.welcome_tagline || '';
+      this.channelAnnouncement = this.inbox.announcement || '';
+      this.channelAnnouncementUrl = this.inbox.announcement_url || '';
+      this.channelAnnouncementLinkTarget =
+        this.inbox.announcement_link_target || 'new_tab';
       this.selectedFeatureFlags = this.inbox.selected_feature_flags || [];
       this.replyTime = this.inbox.reply_time;
       this.locktoSingleConversation = this.inbox.lock_to_single_conversation;
@@ -582,10 +592,12 @@ export default {
         this.widgetBubbleType = savedBubbleSettings.type || 'standard';
         this.widgetBubbleLauncherTitle =
           savedBubbleSettings.launcherTitle || '';
+        this.widgetBubbleBottomOffset = savedBubbleSettings.bottomOffset || 0;
       } else {
         this.widgetBubblePosition = 'right';
         this.widgetBubbleType = 'standard';
         this.widgetBubbleLauncherTitle = '';
+        this.widgetBubbleBottomOffset = 0;
       }
     },
     async fetchHealthData() {
@@ -684,6 +696,7 @@ export default {
         position: this.widgetBubblePosition,
         type: this.widgetBubbleType,
         launcherTitle: this.widgetBubbleLauncherTitle,
+        bottomOffset: Number(this.widgetBubbleBottomOffset) || 0,
       };
       LocalStorage.set(this.widgetBuilderStorageKey, bubbleSettings);
 
@@ -707,8 +720,12 @@ export default {
             widget_color: this.inbox.widget_color,
             website_url: this.channelWebsiteUrl,
             webhook_url: this.webhookUrl,
+            display_name: this.channelDisplayName || '',
             welcome_title: this.channelWelcomeTitle || '',
             welcome_tagline: this.channelWelcomeTagline || '',
+            announcement: this.channelAnnouncement || '',
+            announcement_url: this.channelAnnouncementUrl || '',
+            announcement_link_target: this.channelAnnouncementLinkTarget,
             selectedFeatureFlags: this.selectedFeatureFlags,
             reply_time: this.replyTime || 'in_a_few_minutes',
             continuity_via_email:
@@ -764,6 +781,9 @@ export default {
   },
   validations: {
     webhookUrl: {
+      shouldBeUrl,
+    },
+    channelAnnouncementUrl: {
       shouldBeUrl,
     },
     selectedInboxName: {},
@@ -904,6 +924,22 @@ export default {
                 @delete="handleAvatarDelete"
               />
             </div>
+            <SettingsFieldSection
+              v-if="isAWebWidgetInbox"
+              :label="
+                $t('INBOX_MGMT.ADD.WEBSITE_CHANNEL.CHANNEL_DISPLAY_NAME.LABEL')
+              "
+              :help-text="
+                $t(
+                  'INBOX_MGMT.ADD.WEBSITE_CHANNEL.CHANNEL_DISPLAY_NAME.HELP_TEXT'
+                )
+              "
+            >
+              <woot-input
+                v-model="channelDisplayName"
+                class="[&>input]:!mb-0"
+              />
+            </SettingsFieldSection>
             <SettingsFieldSection :label="inboxNameLabel">
               <woot-input
                 v-model="selectedInboxName"
@@ -1114,6 +1150,93 @@ export default {
               </SettingsFieldSection>
 
               <SettingsFieldSection
+                :label="
+                  $t(
+                    'INBOX_MGMT.ADD.WEBSITE_CHANNEL.CHANNEL_ANNOUNCEMENT.LABEL'
+                  )
+                "
+                :help-text="
+                  $t(
+                    'INBOX_MGMT.ADD.WEBSITE_CHANNEL.CHANNEL_ANNOUNCEMENT.HELP_TEXT'
+                  )
+                "
+              >
+                <woot-input
+                  v-model="channelAnnouncement"
+                  :placeholder="
+                    $t(
+                      'INBOX_MGMT.ADD.WEBSITE_CHANNEL.CHANNEL_ANNOUNCEMENT.PLACEHOLDER'
+                    )
+                  "
+                  class="[&>input]:!mb-0"
+                />
+              </SettingsFieldSection>
+
+              <SettingsFieldSection
+                :label="
+                  $t(
+                    'INBOX_MGMT.ADD.WEBSITE_CHANNEL.CHANNEL_ANNOUNCEMENT.URL_LABEL'
+                  )
+                "
+                :help-text="
+                  $t(
+                    'INBOX_MGMT.ADD.WEBSITE_CHANNEL.CHANNEL_ANNOUNCEMENT.URL_HELP_TEXT'
+                  )
+                "
+              >
+                <woot-input
+                  v-model="channelAnnouncementUrl"
+                  class="[&>input]:!mb-0"
+                  :class="{ error: v$.channelAnnouncementUrl.$error }"
+                  :placeholder="
+                    $t(
+                      'INBOX_MGMT.ADD.WEBSITE_CHANNEL.CHANNEL_ANNOUNCEMENT.URL_PLACEHOLDER'
+                    )
+                  "
+                  :error="
+                    v$.channelAnnouncementUrl.$error
+                      ? $t(
+                          'INBOX_MGMT.ADD.WEBSITE_CHANNEL.CHANNEL_ANNOUNCEMENT.URL_ERROR'
+                        )
+                      : ''
+                  "
+                  @blur="v$.channelAnnouncementUrl.$touch"
+                />
+                <div class="flex items-center gap-2 mt-3">
+                  <label class="text-n-slate-11 text-heading-3">
+                    {{
+                      $t(
+                        'INBOX_MGMT.ADD.WEBSITE_CHANNEL.CHANNEL_ANNOUNCEMENT.URL_TARGET_LABEL'
+                      )
+                    }}
+                  </label>
+                  <SelectInput
+                    v-model="channelAnnouncementLinkTarget"
+                    :aria-label="
+                      $t(
+                        'INBOX_MGMT.ADD.WEBSITE_CHANNEL.CHANNEL_ANNOUNCEMENT.URL_TARGET_LABEL'
+                      )
+                    "
+                    :options="[
+                      {
+                        value: 'new_tab',
+                        label: $t(
+                          'INBOX_MGMT.ADD.WEBSITE_CHANNEL.CHANNEL_ANNOUNCEMENT.URL_TARGET.NEW_TAB'
+                        ),
+                      },
+                      {
+                        value: 'current_tab',
+                        label: $t(
+                          'INBOX_MGMT.ADD.WEBSITE_CHANNEL.CHANNEL_ANNOUNCEMENT.URL_TARGET.CURRENT_TAB'
+                        ),
+                      },
+                    ]"
+                    class="[&>select]:!p-0 min-w-16 [&>select]:!outline-none"
+                  />
+                </div>
+              </SettingsFieldSection>
+
+              <SettingsFieldSection
                 :label="$t('INBOX_MGMT.ADD.WEBSITE_CHANNEL.WIDGET_COLOR.LABEL')"
               >
                 <div class="justify-start">
@@ -1125,9 +1248,11 @@ export default {
                   $t('INBOX_MGMT.WIDGET_BUILDER.WIDGET_OPTIONS.WIDGET_BUBBLE')
                 "
               >
-                <div class="flex items-center gap-6">
+                <div class="flex flex-wrap items-center gap-x-6 gap-y-3">
                   <div class="flex items-center gap-2">
-                    <label class="text-n-slate-11 text-heading-3">
+                    <label
+                      class="text-n-slate-11 text-heading-3 whitespace-nowrap"
+                    >
                       {{
                         $t(
                           'INBOX_MGMT.WIDGET_BUILDER.WIDGET_OPTIONS.WIDGET_BUBBLE_POSITION_LABEL'
@@ -1155,7 +1280,9 @@ export default {
                   </div>
                   <div class="h-3 w-px bg-n-weak rounded-lg" />
                   <div class="flex items-center gap-2">
-                    <label class="text-n-slate-11 text-heading-3">
+                    <label
+                      class="text-n-slate-11 text-heading-3 whitespace-nowrap"
+                    >
                       {{
                         $t(
                           'INBOX_MGMT.WIDGET_BUILDER.WIDGET_OPTIONS.WIDGET_BUBBLE_TYPE_LABEL'
@@ -1177,9 +1304,40 @@ export default {
                           ),
                           value: 'expanded_bubble',
                         },
+                        {
+                          label: $t(
+                            'INBOX_MGMT.WIDGET_BUILDER.WIDGET_OPTIONS.WIDGET_BUBBLE_TYPE.BOX'
+                          ),
+                          value: 'box',
+                        },
                       ]"
                       class="[&>select]:!p-0 min-w-16 [&>select]:!outline-none"
                     />
+                  </div>
+                  <div class="h-3 w-px bg-n-weak rounded-lg" />
+                  <div class="flex items-center gap-2">
+                    <label
+                      class="text-n-slate-11 text-heading-3 whitespace-nowrap"
+                    >
+                      {{
+                        $t(
+                          'INBOX_MGMT.WIDGET_BUILDER.WIDGET_OPTIONS.WIDGET_BUBBLE_BOTTOM_OFFSET_LABEL'
+                        )
+                      }}
+                    </label>
+                    <input
+                      v-model.number="widgetBubbleBottomOffset"
+                      type="number"
+                      min="0"
+                      class="w-16 !mb-0 !p-0 !bg-transparent !border-0 !outline-none text-n-slate-12"
+                    />
+                    <span class="text-n-slate-11 text-heading-3">
+                      {{
+                        $t(
+                          'INBOX_MGMT.WIDGET_BUILDER.WIDGET_OPTIONS.WIDGET_BUBBLE_BOTTOM_OFFSET_SUFFIX'
+                        )
+                      }}
+                    </span>
                   </div>
                 </div>
               </SettingsFieldSection>
@@ -1390,7 +1548,7 @@ export default {
               <Widget
                 :welcome-heading="channelWelcomeTitle"
                 :welcome-tagline="channelWelcomeTagline"
-                :website-name="selectedInboxName"
+                :website-name="channelDisplayName || selectedInboxName"
                 :logo="avatarUrl"
                 is-online
                 :reply-time="replyTime"
@@ -1398,6 +1556,9 @@ export default {
                 :widget-bubble-position="widgetBubblePosition"
                 :widget-bubble-launcher-title="widgetBubbleLauncherTitle"
                 :widget-bubble-type="widgetBubbleType"
+                :widget-bubble-bottom-offset="
+                  Number(widgetBubbleBottomOffset) || 0
+                "
                 :web-widget-script="inbox.web_widget_script"
               />
             </div>

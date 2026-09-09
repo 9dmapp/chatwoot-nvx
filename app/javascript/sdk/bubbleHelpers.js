@@ -1,6 +1,6 @@
 import { addClasses, removeClasses, toggleClass } from './DOMHelpers';
 import { IFrameHelper } from './IFrameHelper';
-import { isExpandedView } from './settingsHelper';
+import { hasLauncherLabel, isBoxView } from './settingsHelper';
 import {
   CHATWOOT_CLOSED,
   CHATWOOT_OPENED,
@@ -19,7 +19,7 @@ export const closeBubble = document.createElement('button');
 export const notificationBubble = document.createElement('span');
 
 export const setBubbleText = bubbleText => {
-  if (isExpandedView(window.$chatwoot.type)) {
+  if (hasLauncherLabel(window.$chatwoot.type)) {
     const textNode = document.getElementById('woot-widget--expanded__text');
     textNode.innerText = bubbleText;
   }
@@ -48,12 +48,15 @@ export const createBubbleIcon = ({ className, path, target }) => {
   bubbleIcon.appendChild(bubblePath);
   target.appendChild(bubbleIcon);
 
-  if (isExpandedView(window.$chatwoot.type)) {
+  if (hasLauncherLabel(window.$chatwoot.type)) {
     const textNode = document.createElement('div');
     textNode.id = 'woot-widget--expanded__text';
     textNode.innerText = '';
     target.appendChild(textNode);
     bubbleClassName += ' woot-widget--expanded';
+    if (isBoxView(window.$chatwoot.type)) {
+      bubbleClassName += ' woot-widget--box';
+    }
   }
 
   target.className = bubbleClassName;
