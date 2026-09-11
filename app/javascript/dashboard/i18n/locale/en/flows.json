@@ -19,6 +19,12 @@
       "DELETE_DESCRIPTION": "{name} will be deleted along with its versions. Conversations already running it will stop.",
       "DELETE_SUCCESS": "Flow deleted",
       "DELETE_ERROR": "Could not delete the flow",
+      "DUPLICATE": "Duplicate",
+      "DUPLICATE_TITLE": "Duplicate flow",
+      "DUPLICATE_DESCRIPTION": "The copy starts paused and unattached, so it will not run until you publish it and pick an inbox.",
+      "DUPLICATE_SUFFIX": "{name} (copy)",
+      "DUPLICATE_SUCCESS": "Flow duplicated",
+      "DUPLICATE_ERROR": "Could not duplicate the flow",
       "CREATE_ERROR": "Could not create the flow",
       "TOGGLE_ERROR": "Could not change the flow status",
       "ALL_INBOXES": "No inbox"

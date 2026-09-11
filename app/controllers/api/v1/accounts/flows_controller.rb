@@ -1,6 +1,6 @@
 class Api::V1::Accounts::FlowsController < Api::V1::Accounts::BaseController
   before_action :check_authorization
-  before_action :fetch_flow, only: [:show, :update, :destroy, :publish]
+  before_action :fetch_flow, only: [:show, :update, :destroy, :publish, :duplicate]
 
   def index
     @flows = Current.account.flows.order(:id)
@@ -31,6 +31,14 @@ class Api::V1::Accounts::FlowsController < Api::V1::Accounts::BaseController
   def destroy
     @flow.destroy!
     head :ok
+  end
+
+  # Copies the graph into a new flow under a name of the caller's choosing.
+  def duplicate
+    @flow = @flow.duplicate!(name: params[:name])
+    render :show
+  rescue ActiveRecord::RecordInvalid => e
+    render_could_not_create_error(e.record.errors.messages)
   end
 
   # Freezes the current draft as the version live conversations will walk.

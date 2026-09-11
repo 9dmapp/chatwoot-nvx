@@ -19,6 +19,10 @@ class FlowPolicy < ApplicationPolicy
     @account_user.administrator?
   end
 
+  def duplicate?
+    @account_user.administrator?
+  end
+
   def destroy?
     @account_user.administrator?
   end

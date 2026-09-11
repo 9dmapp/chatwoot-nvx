@@ -63,6 +63,20 @@ class Flow < ApplicationRecord
     end
   end
 
+  # A copy is a starting point, not a second live flow. The graph and its settings come across,
+  # but the copy starts paused, unpublished and attached to nothing, so going live stays a
+  # deliberate act rather than something a duplicate does on its own. Versions are left behind
+  # with the original: they are the history of what that flow published, not of its graph.
+  def duplicate!(name:)
+    account.flows.create!(
+      name: name,
+      description: description,
+      trigger_type: trigger_type,
+      cooldown_minutes: cooldown_minutes,
+      draft_definition: draft_definition
+    )
+  end
+
   private
 
   def draft_definition_shape
