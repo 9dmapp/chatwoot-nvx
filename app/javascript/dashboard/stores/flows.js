@@ -13,6 +13,18 @@ export const useFlowsStore = createStore({
   actions: () => ({
     // Publishing returns the flow with its new version, so the record is replaced rather than
     // refetched; the editor reads published_version_number straight off it.
+    // The copy comes back fully formed, so it is appended rather than refetching the list.
+    async duplicate(flowId, name) {
+      this.setUIFlag({ creatingItem: true });
+      try {
+        const { data } = await FlowsAPI.duplicate(flowId, name);
+        this.records.push(data.payload);
+        return data.payload;
+      } finally {
+        this.setUIFlag({ creatingItem: false });
+      }
+    },
+
     async publish(flowId) {
       this.setUIFlag({ updatingItem: true });
       try {

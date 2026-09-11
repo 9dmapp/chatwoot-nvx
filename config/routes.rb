@@ -141,6 +141,7 @@ Rails.application.routes.draw do
           end
           resources :flows, only: [:index, :create, :show, :update, :destroy] do
             post :publish, on: :member
+            post :duplicate, on: :member
           end
           resources :sla_policies, only: [:index, :create, :show, :update, :destroy]
           resources :custom_roles, only: [:index, :create, :show, :update, :destroy]

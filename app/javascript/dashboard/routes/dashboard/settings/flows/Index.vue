@@ -21,7 +21,9 @@ const flowsStore = useFlowsStore();
 
 const createDialogRef = ref(null);
 const deleteDialogRef = ref(null);
+const duplicateDialogRef = ref(null);
 const selectedFlow = ref(null);
+const duplicateName = ref('');
 const draft = ref({ name: '', trigger_type: 'conversation_created' });
 
 const records = computed(() => flowsStore.records);
@@ -71,6 +73,21 @@ const toggleActive = async flow => {
     await flowsStore.update({ id: flow.id, active: !flow.active });
   } catch (error) {
     useAlert(errorMessage(error, t('FLOWS.LIST.TOGGLE_ERROR')));
+  }
+};
+
+const confirmDuplicate = flow => {
+  selectedFlow.value = flow;
+  duplicateName.value = t('FLOWS.LIST.DUPLICATE_SUFFIX', { name: flow.name });
+  duplicateDialogRef.value?.open();
+};
+
+const duplicateFlow = async () => {
+  try {
+    await flowsStore.duplicate(selectedFlow.value.id, duplicateName.value);
+    useAlert(t('FLOWS.LIST.DUPLICATE_SUCCESS'));
+  } catch (error) {
+    useAlert(errorMessage(error, t('FLOWS.LIST.DUPLICATE_ERROR')));
   }
 };
 
@@ -174,6 +191,12 @@ onMounted(() => {
             @click="openEditor(flow)"
           />
           <Button
+            icon="i-lucide-copy"
+            size="sm"
+            variant="ghost"
+            @click="confirmDuplicate(flow)"
+          />
+          <Button
             icon="i-lucide-trash-2"
             size="sm"
             variant="ghost"
@@ -194,6 +217,16 @@ onMounted(() => {
         <Input v-model="draft.name" :label="$t('FLOWS.LIST.NAME')" autofocus />
         <Select v-model="draft.trigger_type" :options="triggerOptions" />
       </div>
+    </Dialog>
+
+    <Dialog
+      ref="duplicateDialogRef"
+      :title="$t('FLOWS.LIST.DUPLICATE_TITLE')"
+      :description="$t('FLOWS.LIST.DUPLICATE_DESCRIPTION')"
+      :confirm-button-label="$t('FLOWS.LIST.DUPLICATE')"
+      @confirm="duplicateFlow"
+    >
+      <Input v-model="duplicateName" :label="$t('FLOWS.LIST.NAME')" autofocus />
     </Dialog>
 
     <Dialog
