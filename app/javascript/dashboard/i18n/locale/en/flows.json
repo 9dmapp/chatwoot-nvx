@@ -126,7 +126,26 @@
         "IMAGE_UPLOAD": "Upload image",
         "IMAGE_UPLOADING": "Uploading…",
         "IMAGE_REMOVE": "Remove",
-        "IMAGE_UPLOAD_FAILED": "Upload failed. Please try again."
+        "IMAGE_UPLOAD_FAILED": "Upload failed. Please try again.",
+        "MARKDOWN": {
+          "BOLD": "Bold",
+          "ITALIC": "Italic",
+          "STRIKE": "Strikethrough",
+          "CODE": "Code",
+          "LINK": "Link",
+          "BULLET_LIST": "Bulleted list",
+          "NUMBERED_LIST": "Numbered list",
+          "QUOTE": "Quote",
+          "HEADING": "Heading",
+          "PREVIEW": "Preview",
+          "EDIT": "Edit",
+          "BOLD_TEXT": "bold text",
+          "ITALIC_TEXT": "italic text",
+          "STRIKE_TEXT": "struck text",
+          "CODE_TEXT": "code",
+          "LINK_TEXT": "link text",
+          "LINK_URL": "https://"
+        }
       },
       "INBOXES": "Inboxes",
       "INBOXES_SEARCH": "Search inboxes",

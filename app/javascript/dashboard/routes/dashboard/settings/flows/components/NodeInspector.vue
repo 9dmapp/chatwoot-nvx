@@ -7,6 +7,7 @@ import Input from 'dashboard/components-next/input/Input.vue';
 import Select from 'dashboard/components-next/select/Select.vue';
 import Button from 'dashboard/components-next/button/Button.vue';
 import ConditionRows from './ConditionRows.vue';
+import MarkdownField from './MarkdownField.vue';
 import {
   BUTTON_TYPES,
   CONVERSATION_STATUSES,
@@ -137,7 +138,7 @@ const timeoutMinutes = computed({
     </div>
 
     <template v-if="isMessage || node.type === 'collect_input'">
-      <Input
+      <MarkdownField
         v-model="params.content"
         :label="t('FLOWS.EDITOR.INSPECTOR.CONTENT')"
         :placeholder="t('FLOWS.EDITOR.INSPECTOR.CONTENT_PLACEHOLDER')"
