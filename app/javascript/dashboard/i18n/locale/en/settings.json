@@ -374,6 +374,7 @@
     "REPORTS_BOT": "Bot",
     "REPORTS_AGENT": "Agents",
     "REPORTS_LABEL": "Labels",
+    "REPORTS_RESOLUTION_LABEL": "Resolutions by label",
     "REPORTS_INBOX": "Inbox",
     "REPORTS_TEAM": "Team",
     "AGENT_ASSIGNMENT": "Agent Assignment",

@@ -670,5 +670,16 @@
     "AVG_REPLY_TIME": "Avg. Customer Waiting Time",
     "RESOLUTION_COUNT": "Resolution Count",
     "CONVERSATIONS": "No. of conversations"
+  },
+  "RESOLUTION_LABEL_REPORTS": {
+    "HEADER": "Resolutions by label",
+    "DESCRIPTION": "Every time a conversation is resolved, the labels it carried at that moment are recorded. A conversation that is reopened and resolved again is counted again, under whatever it is labelled the second time.",
+    "RANGE": "Last {days} days",
+    "TOTAL": "Resolutions",
+    "UNLABELLED": "Resolved with no label",
+    "LABEL": "Label",
+    "COUNT": "Resolutions",
+    "SHARE": "Share of resolutions",
+    "EMPTY": "No conversations have been resolved with a label in this period."
   }
 }

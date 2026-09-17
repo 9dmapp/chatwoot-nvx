@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.2].define(version: 2026_09_11_000000) do
+ActiveRecord::Schema[7.2].define(version: 2026_09_17_000000) do
   # These extensions should be enabled to support this database
   enable_extension "pg_stat_statements"
   enable_extension "pg_trgm"
@@ -857,6 +857,21 @@ ActiveRecord::Schema[7.2].define(version: 2026_09_11_000000) do
     t.index ["user_id"], name: "index_conversation_participants_on_user_id"
   end
 
+  create_table "conversation_resolutions", force: :cascade do |t|
+    t.bigint "account_id", null: false
+    t.bigint "conversation_id", null: false
+    t.bigint "inbox_id", null: false
+    t.bigint "assignee_id"
+    t.string "labels", default: [], null: false, array: true
+    t.datetime "resolved_at", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["account_id", "inbox_id", "resolved_at"], name: "idx_on_account_id_inbox_id_resolved_at_4b9656687c"
+    t.index ["account_id", "resolved_at"], name: "index_conversation_resolutions_on_account_id_and_resolved_at"
+    t.index ["conversation_id"], name: "index_conversation_resolutions_on_conversation_id"
+    t.index ["labels"], name: "index_conversation_resolutions_on_labels", using: :gin
+  end
+
   create_table "conversations", id: :serial, force: :cascade do |t|
     t.integer "account_id", null: false
     t.integer "inbox_id", null: false
@@ -1672,6 +1687,8 @@ ActiveRecord::Schema[7.2].define(version: 2026_09_11_000000) do
   add_foreign_key "campaign_recipients", "campaigns", on_delete: :cascade
   add_foreign_key "campaign_recipients", "contacts", on_delete: :cascade
   add_foreign_key "campaign_recipients", "inboxes", on_delete: :cascade
+  add_foreign_key "conversation_resolutions", "accounts", on_delete: :cascade
+  add_foreign_key "conversation_resolutions", "conversations", on_delete: :cascade
   add_foreign_key "flow_inboxes", "accounts", on_delete: :cascade
   add_foreign_key "flow_inboxes", "flows", on_delete: :cascade
   add_foreign_key "flow_inboxes", "inboxes", on_delete: :cascade
