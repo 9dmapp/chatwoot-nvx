@@ -546,6 +546,7 @@ Rails.application.routes.draw do
               get :agents
               get :inboxes
               get :labels
+              get :resolution_labels, to: 'resolution_labels#index'
               get :teams
               get :conversations
               get :conversations_summary

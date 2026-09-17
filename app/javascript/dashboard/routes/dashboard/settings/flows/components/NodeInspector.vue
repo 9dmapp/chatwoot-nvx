@@ -128,7 +128,7 @@ const timeoutMinutes = computed({
 
 <template>
   <aside
-    class="flex w-80 shrink-0 flex-col gap-4 overflow-y-auto border-s border-n-weak bg-n-solid-1 p-4"
+    class="flex w-1/2 min-w-96 shrink-0 flex-col gap-4 overflow-y-auto border-s border-n-weak bg-n-solid-1 p-4"
   >
     <div class="flex items-center justify-between gap-2">
       <h3 class="text-sm font-medium text-n-slate-12">
@@ -140,6 +140,7 @@ const timeoutMinutes = computed({
     <template v-if="isMessage || node.type === 'collect_input'">
       <MarkdownField
         v-model="params.content"
+        :rows="12"
         :label="t('FLOWS.EDITOR.INSPECTOR.CONTENT')"
         :placeholder="t('FLOWS.EDITOR.INSPECTOR.CONTENT_PLACEHOLDER')"
       />

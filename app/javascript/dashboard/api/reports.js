@@ -109,6 +109,12 @@ class ReportsAPI extends ApiClient {
     });
   }
 
+  getResolutionLabels({ since, until }) {
+    return axios.get(`${this.url}/resolution_labels`, {
+      params: { since, until },
+    });
+  }
+
   getLabelReports({ from: since, to: until, businessHours }) {
     return axios.get(`${this.url}/labels`, {
       params: { since, until, business_hours: businessHours },
