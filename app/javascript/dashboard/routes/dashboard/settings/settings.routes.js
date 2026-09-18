@@ -18,6 +18,7 @@ import inbox from './inbox/inbox.routes';
 import templates from './templates/templates.routes';
 import integrations from './integrations/integrations.routes';
 import labels from './labels/labels.routes';
+import sessionLabels from './sessionLabels/sessionLabels.routes';
 import macros from './macros/macros.routes';
 import reports from './reports/reports.routes';
 import store from '../../../store';
@@ -64,6 +65,7 @@ export default {
     ...integrations.routes,
     ...data.routes,
     ...labels.routes,
+    ...sessionLabels.routes,
     ...macros.routes,
     ...reports.routes,
     ...sla.routes,

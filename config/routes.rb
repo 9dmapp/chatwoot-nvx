@@ -139,6 +139,7 @@ Rails.application.routes.draw do
           resources :macros, only: [:index, :create, :show, :update, :destroy] do
             post :execute, on: :member
           end
+          resources :session_labels, only: [:index, :create, :update, :destroy]
           resources :flows, only: [:index, :create, :show, :update, :destroy] do
             post :publish, on: :member
             post :duplicate, on: :member
@@ -546,7 +547,7 @@ Rails.application.routes.draw do
               get :agents
               get :inboxes
               get :labels
-              get :resolution_labels, to: 'resolution_labels#index'
+              get :session_labels, to: 'session_label_reports#index'
               get :teams
               get :conversations
               get :conversations_summary

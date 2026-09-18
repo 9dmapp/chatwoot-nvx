@@ -114,6 +114,7 @@ en:
       multi_account_invitation_not_allowed: Users associated with another account cannot be added while SAML is enabled
     conversations:
       resolved: Conversation is resolved and does not accept new messages
+      session_label_required: Pick what this chat was about before resolving it
       unread_counts:
         feature_not_enabled: Conversation unread counts feature not enabled for this account
     data_import:

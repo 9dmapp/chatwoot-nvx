@@ -1,0 +1,30 @@
+{
+  "SESSION_LABELS": {
+    "HEADER": "Session labels",
+    "DESCRIPTION": "The reasons a chat can be closed for. An agent picks one as they resolve, and it is recorded against that chat only — a visitor who comes back about something else is categorised afresh, with nothing to un-set.",
+    "LOADING": "Loading session labels",
+    "NEW": "New session label",
+    "EDIT_TITLE": "Edit session label",
+    "EMPTY": "No session labels yet. Add the reasons your team closes chats for, such as “Payment error” or “Bug”.",
+    "TITLE": "Name",
+    "TITLE_PLACEHOLDER": "Payment error",
+    "DESCRIPTION_FIELD": "Description",
+    "SAVE": "Save",
+    "SAVE_ERROR": "Could not save the session label",
+    "ARCHIVE": "Archive",
+    "ARCHIVE_TITLE": "Archive session label",
+    "ARCHIVE_DESCRIPTION": "{name} will stop being offered to agents. Chats already closed under it keep it, so past insights are unchanged.",
+    "ARCHIVE_SUCCESS": "Session label archived",
+    "ARCHIVE_ERROR": "Could not archive the session label",
+    "ARCHIVED": "Archived",
+    "ARCHIVED_HINT": "No longer offered when resolving, but still counted in insights for the chats that used them.",
+    "DIALOG": {
+      "TITLE": "What was this chat about?",
+      "DESCRIPTION": "Pick one or more. This applies to this chat only.",
+      "DESCRIPTION_REQUIRED": "Pick one or more before resolving. This applies to this chat only.",
+      "CONFIRM": "Resolve",
+      "CANCEL": "Cancel",
+      "NONE_CONFIGURED": "No session labels have been set up yet."
+    }
+  }
+}

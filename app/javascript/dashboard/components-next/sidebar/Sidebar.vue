@@ -349,9 +349,9 @@ const newReportRoutes = () => [
     to: accountScopedRoute('label_reports_index'),
   },
   {
-    name: 'Reports Resolution Label',
-    label: t('SIDEBAR.REPORTS_RESOLUTION_LABEL'),
-    to: accountScopedRoute('resolution_label_reports'),
+    name: 'Reports Session Label',
+    label: t('SIDEBAR.REPORTS_SESSION_LABEL'),
+    to: accountScopedRoute('session_label_reports'),
   },
   {
     name: 'Reports Inbox',
@@ -871,6 +871,12 @@ const menuItems = computed(() => {
           label: t('SIDEBAR.LABELS'),
           icon: 'i-lucide-tags',
           to: accountScopedRoute('labels_list'),
+        },
+        {
+          name: 'Settings Session Labels',
+          label: t('SIDEBAR.SESSION_LABELS'),
+          icon: 'i-lucide-list-checks',
+          to: accountScopedRoute('session_labels_list'),
         },
         {
           name: 'Settings Custom Attributes',
