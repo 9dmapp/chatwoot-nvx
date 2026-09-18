@@ -1,5 +1,5 @@
 <script setup>
-import { ref, computed } from 'vue';
+import { ref, computed, onMounted } from 'vue';
 import { useAlert } from 'dashboard/composables';
 import { useToggle } from '@vueuse/core';
 import { useI18n } from 'vue-i18n';
@@ -7,6 +7,8 @@ import { useStore, useStoreGetters } from 'dashboard/composables/store';
 import { useEmitter } from 'dashboard/composables/emitter';
 import { useKeyboardEvents } from 'dashboard/composables/useKeyboardEvents';
 import { useConversationRequiredAttributes } from 'dashboard/composables/useConversationRequiredAttributes';
+import { useSessionLabelsStore } from 'dashboard/stores/sessionLabels';
+import SessionLabelDialog from 'dashboard/components-next/SessionLabels/SessionLabelDialog.vue';
 
 import WootDropdownItem from 'shared/components/ui/dropdown/DropdownItem.vue';
 import WootDropdownMenu from 'shared/components/ui/dropdown/DropdownMenu.vue';
@@ -28,12 +30,23 @@ const { checkMissingAttributes } = useConversationRequiredAttributes();
 const arrowDownButtonRef = ref(null);
 const isLoading = ref(false);
 const resolveAttributesModalRef = ref(null);
+const sessionLabelDialogRef = ref(null);
+const sessionLabelsStore = useSessionLabelsStore();
 
 const [showActionsDropdown, toggleDropdown] = useToggle();
 const closeDropdown = () => toggleDropdown(false);
 const openDropdown = () => toggleDropdown(true);
 
 const currentChat = computed(() => getters.getSelectedChat.value);
+
+const sessionLabels = computed(() => sessionLabelsStore.active);
+// The inbox decides whether an answer is compulsory; the picker itself is offered whenever
+// there are labels to offer.
+const inboxRequiresSessionLabel = computed(
+  () =>
+    getters['inboxes/getInbox'].value(currentChat.value?.inbox_id)
+      ?.require_session_label ?? false
+);
 
 const isOpen = computed(
   () => currentChat.value.status === wootConstants.STATUS_TYPE.OPEN
@@ -81,7 +94,12 @@ const openSnoozeModal = () => {
   ninja.open({ parent: 'snooze_conversation' });
 };
 
-const toggleStatus = (status, snoozedUntil, customAttributes = null) => {
+const toggleStatus = (
+  status,
+  snoozedUntil,
+  customAttributes = null,
+  sessionLabelIds = null
+) => {
   closeDropdown();
   isLoading.value = true;
 
@@ -93,6 +111,10 @@ const toggleStatus = (status, snoozedUntil, customAttributes = null) => {
 
   if (customAttributes) {
     payload.customAttributes = customAttributes;
+  }
+
+  if (sessionLabelIds) {
+    payload.sessionLabelIds = sessionLabelIds;
   }
 
   store.dispatch('toggleStatus', payload).then(() => {
@@ -133,9 +155,16 @@ const onCmdResolveConversation = () => {
       currentCustomAttributes,
       conversationContext
     );
+  } else if (sessionLabels.value.length) {
+    sessionLabelDialogRef.value?.open();
   } else {
     toggleStatus(wootConstants.STATUS_TYPE.RESOLVED);
   }
+};
+
+const onSessionLabelsPicked = sessionLabelIds => {
+  sessionLabelDialogRef.value?.close();
+  toggleStatus(wootConstants.STATUS_TYPE.RESOLVED, null, null, sessionLabelIds);
 };
 
 const keyboardEvents = {
@@ -170,6 +199,8 @@ const keyboardEvents = {
 };
 
 useKeyboardEvents(keyboardEvents);
+
+onMounted(() => sessionLabelsStore.get());
 
 useEmitter(CMD_REOPEN_CONVERSATION, onCmdOpenConversation);
 useEmitter(CMD_RESOLVE_CONVERSATION, onCmdResolveConversation);
@@ -258,6 +289,12 @@ useEmitter(CMD_RESOLVE_CONVERSATION, onCmdResolveConversation);
     <ConversationResolveAttributesModal
       ref="resolveAttributesModalRef"
       @submit="handleResolveWithAttributes"
+    />
+    <SessionLabelDialog
+      ref="sessionLabelDialogRef"
+      :labels="sessionLabels"
+      :required="inboxRequiresSessionLabel"
+      @confirm="onSessionLabelsPicked"
     />
   </div>
 </template>

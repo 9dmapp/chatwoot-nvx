@@ -109,9 +109,9 @@ class ReportsAPI extends ApiClient {
     });
   }
 
-  getResolutionLabels({ since, until }) {
-    return axios.get(`${this.url}/resolution_labels`, {
-      params: { since, until },
+  getSessionLabels({ since, until, inboxId }) {
+    return axios.get(`${this.url}/session_labels`, {
+      params: { since, until, inbox_id: inboxId },
     });
   }
 

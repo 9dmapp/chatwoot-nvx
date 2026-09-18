@@ -106,6 +106,7 @@ export default {
       businessName: '',
       locktoSingleConversation: false,
       allowMessagesAfterResolved: true,
+      requireSessionLabel: false,
       continuityViaEmail: true,
       selectedInboxName: '',
       channelWebsiteUrl: '',
@@ -568,6 +569,7 @@ export default {
       this.businessName = this.inbox.business_name;
       this.allowMessagesAfterResolved =
         this.inbox.allow_messages_after_resolved;
+      this.requireSessionLabel = this.inbox.require_session_label;
       this.continuityViaEmail = this.inbox.continuity_via_email;
       this.channelWebsiteUrl = this.inbox.website_url;
       this.channelDisplayName = this.inbox.display_name || '';
@@ -706,6 +708,7 @@ export default {
           name: this.selectedInboxName?.trim(),
           enable_email_collect: this.emailCollectEnabled,
           allow_messages_after_resolved: this.allowMessagesAfterResolved,
+          require_session_label: this.requireSessionLabel,
           greeting_enabled: this.greetingEnabled,
           greeting_message: this.greetingMessage || '',
           portal_id: this.selectedPortalSlug
@@ -1501,6 +1504,14 @@ export default {
                   $t(
                     'INBOX_MGMT.SETTINGS_POPUP.ALLOW_MESSAGES_AFTER_RESOLVED_SUB_TEXT'
                   )
+                "
+              />
+
+              <SettingsToggleSection
+                v-model="requireSessionLabel"
+                :header="$t('INBOX_MGMT.SETTINGS_POPUP.REQUIRE_SESSION_LABEL')"
+                :description="
+                  $t('INBOX_MGMT.SETTINGS_POPUP.REQUIRE_SESSION_LABEL_SUB_TEXT')
                 "
               />
 

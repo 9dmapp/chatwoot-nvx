@@ -8,7 +8,7 @@ import AgentReportsIndex from './AgentReportsIndex.vue';
 import InboxReportsIndex from './InboxReportsIndex.vue';
 import TeamReportsIndex from './TeamReportsIndex.vue';
 import LabelReportsIndex from './LabelReportsIndex.vue';
-import ResolutionLabelReports from './ResolutionLabelReports.vue';
+import SessionLabelReports from './SessionLabelReports.vue';
 
 import AgentReportsShow from './AgentReportsShow.vue';
 import InboxReportsShow from './InboxReportsShow.vue';
@@ -102,10 +102,10 @@ const revisedReportRoutes = [
     component: LabelReportsIndex,
   },
   {
-    path: 'resolution_labels',
-    name: 'resolution_label_reports',
+    path: 'session_labels',
+    name: 'session_label_reports',
     meta,
-    component: ResolutionLabelReports,
+    component: SessionLabelReports,
   },
   {
     path: 'labels/:id',

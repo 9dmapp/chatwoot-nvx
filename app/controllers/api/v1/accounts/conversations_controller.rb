@@ -1,10 +1,12 @@
 class Api::V1::Accounts::ConversationsController < Api::V1::Accounts::BaseController
+  include SessionLabelSelection
   include Events::Types
   include DateRangeHelper
   include HmacConcern
   include ConversationCustomAttributesConcern
 
   before_action :conversation, except: [:index, :meta, :search, :create, :filter]
+  before_action :apply_session_label_selection, only: [:toggle_status]
   before_action :inbox, :contact, :contact_inbox, only: [:create]
 
   ATTACHMENT_RESULTS_PER_PAGE = 100
