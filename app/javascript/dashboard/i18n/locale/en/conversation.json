@@ -381,7 +381,8 @@
           "outdated_information": "Outdated information",
           "other": "Other"
         }
-      }
+      },
+      "RECALL": "Recall"
     },
     "SIDEBAR": {
       "CONTACT": "Contact",
@@ -401,7 +402,10 @@
       "UNMUTE": "Unmute mic",
       "VIEW_CHAT_HISTORY": "View chat history",
       "GO_TO_CONVERSATION": "Go to conversation thread"
-    }
+    },
+    "SUCCESS_RECALL_MESSAGE": "Message recalled. The customer no longer sees it; your team still does.",
+    "FAIL_RECALL_MESSAGE": "Could not recall the message",
+    "RECALLED_BY": "Recalled by {name}"
   },
   "EMAIL_TRANSCRIPT": {
     "TITLE": "Send conversation transcript",

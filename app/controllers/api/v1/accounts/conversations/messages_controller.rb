@@ -25,6 +25,14 @@ class Api::V1::Accounts::Conversations::MessagesController < Api::V1::Accounts::
     end
   end
 
+  # Takes a message back from the contact while leaving it on the record for the team.
+  def recall
+    return render_could_not_create_error(I18n.t('errors.conversations.recall_not_allowed')) unless recallable?
+
+    message.recall!(Current.user)
+    @message = message
+  end
+
   def retry
     return if message.blank?
 
@@ -55,6 +63,12 @@ class Api::V1::Accounts::Conversations::MessagesController < Api::V1::Accounts::
   end
 
   private
+
+  # Only what an operator said to the contact can be taken back: an incoming message is the
+  # contact's own, and a private note was never sent to them in the first place.
+  def recallable?
+    message.present? && message.outgoing? && !message.private? && !message.recalled?
+  end
 
   def message
     @message ||= @conversation.messages.find(permitted_params[:id])

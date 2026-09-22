@@ -144,6 +144,38 @@ class Message < ApplicationRecord
     @token ||= inbox.channel.try(:page_access_token)
   end
 
+  # Recall hides a message from the person it was sent to without destroying it. Chatwoot's
+  # delete overwrites the content, which suits a mistake nobody needs to account for; a recall
+  # has to leave the original in place so a manager can see what was said and taken back.
+  def recalled?
+    content_attributes['recalled'].present?
+  end
+
+  def recall!(user)
+    update!(content_attributes: content_attributes.merge(
+      'recalled' => true,
+      'recalled_at' => Time.zone.now.to_i,
+      'recalled_by_id' => user.id,
+      'recalled_by_name' => user.available_name
+    ))
+  end
+
+  # What the contact is allowed to receive. The original content, its attachments and who took
+  # it back stay on the record for the team; none of it is sent to the person it was recalled
+  # from, so a recall is not merely hidden by their browser.
+  def push_event_data_for_contact
+    return push_event_data unless recalled?
+
+    push_event_data.merge(
+      content: I18n.t('conversations.messages.recalled'),
+      # The text lives in two columns, and push_event_data ships every attribute, so blanking
+      # `content` alone would still hand the original over in `processed_message_content`.
+      processed_message_content: nil,
+      content_attributes: { recalled: true },
+      attachments: []
+    )
+  end
+
   def push_event_data
     data = attributes.symbolize_keys.merge(
       created_at: created_at.to_i,

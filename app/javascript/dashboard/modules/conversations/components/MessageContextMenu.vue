@@ -140,6 +140,18 @@ export default {
       this.$emit('replyTo', this.message);
       this.handleClose();
     },
+    async recallMessage() {
+      try {
+        await this.$store.dispatch('recallMessage', {
+          conversationId: this.conversationId,
+          messageId: this.messageId,
+        });
+        useAlert(this.$t('CONVERSATION.SUCCESS_RECALL_MESSAGE'));
+        this.handleClose();
+      } catch (error) {
+        useAlert(this.$t('CONVERSATION.FAIL_RECALL_MESSAGE'));
+      }
+    },
     openDeleteModal() {
       this.handleClose();
       this.showDeleteModal = true;
@@ -263,6 +275,15 @@ export default {
           }"
           variant="icon"
           @click.stop="openReportDialog"
+        />
+        <MenuItem
+          v-if="enabledOptions['recall']"
+          :option="{
+            icon: 'arrow-undo',
+            label: $t('CONVERSATION.CONTEXT_MENU.RECALL'),
+          }"
+          variant="icon"
+          @click.stop="recallMessage"
         />
         <hr v-if="enabledOptions['delete']" />
         <MenuItem

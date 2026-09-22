@@ -30,6 +30,8 @@ export default {
     },
   },
   setup() {
+    // The content itself is redacted server side; this only keeps a taken-back message from
+    // reading like something the agent actually said.
     const { formatMessage, getPlainText, truncateMessage, highlightContent } =
       useMessageFormatter();
     return {
@@ -40,6 +42,9 @@ export default {
     };
   },
   computed: {
+    isRecalled() {
+      return !!this.messageContentAttributes?.recalled;
+    },
     isTemplate() {
       return this.messageType === 3;
     },
@@ -99,7 +104,8 @@ export default {
     >
       <div
         v-dompurify-html="formatMessage(message, false)"
-        class="message-content text-n-slate-12"
+        class="message-content"
+        :class="isRecalled ? 'italic text-n-slate-10' : 'text-n-slate-12'"
       />
       <EmailInput
         v-if="isTemplateEmail"
