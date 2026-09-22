@@ -88,6 +88,12 @@ class MessageApi extends ApiClient {
     });
   }
 
+  recall(conversationID, messageId) {
+    return axios.post(
+      `${this.url}/${conversationID}/messages/${messageId}/recall`
+    );
+  }
+
   delete(conversationID, messageId) {
     return axios.delete(`${this.url}/${conversationID}/messages/${messageId}`);
   }

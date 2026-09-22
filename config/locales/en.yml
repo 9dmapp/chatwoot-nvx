@@ -112,9 +112,11 @@ en:
       feature_not_enabled: SAML feature not enabled for this account
       sso_not_enabled: SAML SSO is not enabled for this installation
       multi_account_invitation_not_allowed: Users associated with another account cannot be added while SAML is enabled
+
     conversations:
       resolved: Conversation is resolved and does not accept new messages
       session_label_required: Pick what this chat was about before resolving it
+      recall_not_allowed: Only a message you sent to the contact can be recalled
       unread_counts:
         feature_not_enabled: Conversation unread counts feature not enabled for this account
     data_import:
@@ -306,6 +308,7 @@ en:
       instagram_shared_story_content: 'Shared story'
       instagram_shared_post_content: 'Shared post'
       deleted: This message was deleted
+      recalled: This message was recalled
       whatsapp:
         list_button_label: 'Choose an item'
         call_permission_request_body: 'We would like to call you regarding your conversation.'

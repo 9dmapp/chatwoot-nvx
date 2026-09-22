@@ -1,4 +1,5 @@
 class ActionCableListener < BaseListener
+  include MessageAudienceBroadcast
   include Events::Types
 
   def notification_created(event)
@@ -39,19 +40,11 @@ class ActionCableListener < BaseListener
   end
 
   def message_created(event)
-    message, account = extract_message_and_account(event)
-    conversation = message.conversation
-    tokens = user_tokens(account, conversation.inbox.members) + contact_tokens(conversation.contact_inbox, message)
-
-    broadcast(account, tokens, MESSAGE_CREATED, message.push_event_data)
+    broadcast_message_created(event, MESSAGE_CREATED)
   end
 
   def message_updated(event)
-    message, account = extract_message_and_account(event)
-    conversation = message.conversation
-    tokens = user_tokens(account, conversation.inbox.members) + contact_tokens(conversation.contact_inbox, message)
-
-    broadcast(account, tokens, MESSAGE_UPDATED, message.push_event_data.merge(previous_changes: event.data[:previous_changes]))
+    broadcast_message_updated(event, MESSAGE_UPDATED, previous_changes: event.data[:previous_changes])
   end
 
   def first_reply_created(event)

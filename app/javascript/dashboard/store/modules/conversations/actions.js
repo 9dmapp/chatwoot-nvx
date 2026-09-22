@@ -362,6 +362,13 @@ const actions = {
     );
   },
 
+  // The message stays in the agent's view with its original content; only what the contact
+  // receives is redacted, so the reply the server sends back is simply merged in.
+  recallMessage: async ({ commit }, { conversationId, messageId }) => {
+    const { data } = await MessageApi.recall(conversationId, messageId);
+    commit(types.ADD_MESSAGE, data);
+  },
+
   deleteMessage: async function deleteLabels(
     { commit },
     { conversationId, messageId }

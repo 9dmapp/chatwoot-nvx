@@ -371,6 +371,16 @@ const isMessageDeleted = computed(() => {
   return props.contentAttributes?.deleted;
 });
 
+// Recalled messages stay visible here with their original content: the team needs to see what
+// was taken back. Only the contact's copy is redacted, and that happens on the server.
+const isMessageRecalled = computed(() => !!props.contentAttributes?.recalled);
+
+const recalledByLabel = computed(() =>
+  t('CONVERSATION.RECALLED_BY', {
+    name: props.contentAttributes?.recalled_by_name ?? '',
+  })
+);
+
 const shouldShowWhatsappReferral = computed(
   () =>
     variant.value === MESSAGE_VARIANTS.USER &&
@@ -397,6 +407,13 @@ const contextMenuEnabledOptions = computed(() => {
 
   return {
     copy: hasText,
+    // Only what was actually sent to the contact can be taken back, and only once.
+    recall:
+      isOutgoing &&
+      !props.private &&
+      !isFailedOrProcessing &&
+      !isMessageDeleted.value &&
+      !isMessageRecalled.value,
     delete:
       (hasText || hasAttachments) &&
       !isFailedOrProcessing &&
@@ -589,9 +606,22 @@ provideMessageContext({
           'ltr:ml-8 rtl:mr-8 justify-end': orientation === ORIENTATION.RIGHT,
           'ltr:mr-8 rtl:ml-8': orientation === ORIENTATION.LEFT,
           'flex-col items-start gap-2': shouldShowWhatsappReferral,
+          'flex-col items-end gap-1':
+            isMessageRecalled && orientation === ORIENTATION.RIGHT,
+          'flex-col items-start gap-1':
+            isMessageRecalled && orientation === ORIENTATION.LEFT,
         }"
         @contextmenu="openContextMenu($event)"
       >
+        <!-- The contact sees a placeholder; this is the team's view, so the original stays
+             on screen and is simply marked as taken back. -->
+        <span
+          v-if="isMessageRecalled"
+          class="flex items-center gap-1 text-xs italic text-n-amber-11"
+        >
+          <span class="i-lucide-undo-2 size-3" />
+          {{ recalledByLabel }}
+        </span>
         <WhatsappReferral
           v-if="shouldShowWhatsappReferral"
           :referral="contentAttributes.referral"
