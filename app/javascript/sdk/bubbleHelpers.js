@@ -1,6 +1,7 @@
 import { addClasses, removeClasses, toggleClass } from './DOMHelpers';
 import { IFrameHelper } from './IFrameHelper';
 import { hasLauncherLabel, isBoxView } from './settingsHelper';
+import { BOX_LAUNCHER_LABEL } from './constants';
 import {
   CHATWOOT_CLOSED,
   CHATWOOT_OPENED,
@@ -21,7 +22,11 @@ export const notificationBubble = document.createElement('span');
 export const setBubbleText = bubbleText => {
   if (hasLauncherLabel(window.$chatwoot.type)) {
     const textNode = document.getElementById('woot-widget--expanded__text');
-    textNode.innerText = bubbleText;
+    // The pill shows whatever the conversation puts there; the box is a fixed tab down the edge
+    // of the page, so its label stays the same whoever is looking at it.
+    textNode.innerText = isBoxView(window.$chatwoot.type)
+      ? BOX_LAUNCHER_LABEL
+      : bubbleText;
   }
 };
 
@@ -51,7 +56,11 @@ export const createBubbleIcon = ({ className, path, target }) => {
   if (hasLauncherLabel(window.$chatwoot.type)) {
     const textNode = document.createElement('div');
     textNode.id = 'woot-widget--expanded__text';
-    textNode.innerText = '';
+    // The box reads the same from the moment it is drawn; the pill waits for the conversation
+    // to say what belongs there.
+    textNode.innerText = isBoxView(window.$chatwoot.type)
+      ? BOX_LAUNCHER_LABEL
+      : '';
     target.appendChild(textNode);
     bubbleClassName += ' woot-widget--expanded';
     if (isBoxView(window.$chatwoot.type)) {
