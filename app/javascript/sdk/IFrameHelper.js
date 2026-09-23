@@ -206,6 +206,19 @@ export const IFrameHelper = {
     onEvent({ eventIdentifier: eventName, data }) {
       dispatchWindowEvent({ eventName, data });
     },
+    // Asked for when the visitor opens an image. The panel is grown to the viewport for as long
+    // as the image is up, then put back exactly as it was.
+    setFullScreen({ enabled }) {
+      const holder = document.querySelector('.woot-widget-holder');
+      if (!holder) return;
+
+      if (enabled) {
+        addClasses(holder, 'woot-widget-holder--full-screen');
+      } else {
+        removeClasses(holder, 'woot-widget-holder--full-screen');
+      }
+    },
+
     setBubbleLabel(message) {
       setBubbleText(window.$chatwoot.launcherTitle || message.label);
     },
