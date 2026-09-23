@@ -6,6 +6,7 @@ import {
   getDarkMode,
   getWidgetStyle,
 } from '../sdk/settingsHelper';
+import { DEFAULT_LOCALE } from '../sdk/constants';
 import {
   computeHashForUserData,
   getUserCookieName,
@@ -49,12 +50,11 @@ const runSDK = ({ baseUrl, websiteToken }) => {
   );
 
   const chatwootSettings = window.chatwootSettings || {};
-  let locale = chatwootSettings.locale;
+  // Following the visitor's browser meant one page answered in whatever locale a device happened
+  // to be set to, which is not a choice the business ever made. A site can still name a language
+  // explicitly; otherwise the widget speaks English.
+  const locale = chatwootSettings.locale || DEFAULT_LOCALE;
   let baseDomain = chatwootSettings.baseDomain;
-
-  if (chatwootSettings.useBrowserLanguage) {
-    locale = window.navigator.language.replace('-', '_');
-  }
 
   window.$chatwoot = {
     baseUrl,
@@ -65,7 +65,6 @@ const runSDK = ({ baseUrl, websiteToken }) => {
     position: chatwootSettings.position === 'left' ? 'left' : 'right',
     websiteToken,
     locale,
-    useBrowserLanguage: chatwootSettings.useBrowserLanguage || false,
     type: getBubbleView(chatwootSettings.type),
     bubbleBottomOffset: getBubbleBottomOffset(
       chatwootSettings.bubbleBottomOffset
