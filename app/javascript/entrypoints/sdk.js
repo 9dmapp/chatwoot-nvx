@@ -203,6 +203,11 @@ const runSDK = ({ baseUrl, websiteToken }) => {
       Cookies.remove('cw_conversation');
       Cookies.remove(getUserCookieName());
 
+      // Replacing the frame's src tears the widget document down without unmounting anything,
+      // so an image viewer that was open never gets to ask for the panel back. Left alone, the
+      // panel would stay stretched over the whole page with nothing in it.
+      IFrameHelper.events.setFullScreen({ enabled: false });
+
       const iframe = IFrameHelper.getAppFrame();
       iframe.src = IFrameHelper.getUrl({
         baseUrl: window.$chatwoot.baseUrl,

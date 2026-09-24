@@ -1,6 +1,7 @@
 <script setup>
 import { onBeforeUnmount, onMounted } from 'vue';
 import { useI18n } from 'vue-i18n';
+import { IFrameHelper } from 'widget/helpers/utils';
 
 const props = defineProps({
   url: { type: String, required: true },
@@ -13,16 +14,27 @@ const onKeydown = event => {
   if (event.key === 'Escape') emit('close');
 };
 
-// The widget is its own document, so a fixed overlay covers the whole panel. Scrolling the
-// conversation behind the image would be disorienting, so it is frozen while this is open.
+// The widget is its own document, so this overlay can only cover the panel. The panel is asked
+// to take the whole viewport for as long as the image is up, which is what makes it full screen
+// rather than full-panel. On the standalone widget page there is no parent to ask, and none is
+// needed - the page is already the viewport.
+const setParentFullScreen = enabled => {
+  if (!IFrameHelper.isIFrame()) return;
+
+  IFrameHelper.sendMessage({ event: 'setFullScreen', enabled });
+};
+
+// Scrolling the conversation behind the image would be disorienting, so it is frozen too.
 onMounted(() => {
   document.addEventListener('keydown', onKeydown);
   document.documentElement.style.overflow = 'hidden';
+  setParentFullScreen(true);
 });
 
 onBeforeUnmount(() => {
   document.removeEventListener('keydown', onKeydown);
   document.documentElement.style.overflow = '';
+  setParentFullScreen(false);
 });
 </script>
 
