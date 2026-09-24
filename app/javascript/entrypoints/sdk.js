@@ -7,6 +7,7 @@ import {
   getWidgetStyle,
 } from '../sdk/settingsHelper';
 import { DEFAULT_LOCALE } from '../sdk/constants';
+import { resolveIdentity } from '../sdk/identityHelper';
 import {
   computeHashForUserData,
   getUserCookieName,
@@ -19,6 +20,37 @@ import {
 } from '../sdk/DOMHelpers';
 import { setCookieWithDomain } from '../sdk/cookieHelpers';
 import { SDK_SET_BUBBLE_VISIBILITY } from 'shared/constants/sharedFrameEvents';
+
+// A site that already knows who is signed in can point the widget at that, rather than writing
+// its own call to setUser. The value is read repeatedly because on a single-page app the visitor
+// usually signs in long after the widget has loaded, and may sign out and back in as someone
+// else; setUser itself ignores a repeat of an identity it has already sent.
+const IDENTITY_POLL_MS = 2000;
+
+const startIdentityWatch = identifyFrom => {
+  if (!identifyFrom || !identifyFrom.identifier) return;
+
+  let lastApplied = null;
+
+  const apply = () => {
+    // sendMessage posts straight at the frame with no queue, so anything sent before the widget
+    // has mounted its listener is simply dropped. Waiting for it to report in means the identity
+    // is not marked as sent when nothing received it.
+    if (!window.$chatwoot || !window.$chatwoot.hasLoaded) return;
+
+    const identity = resolveIdentity(identifyFrom);
+    if (!identity) return;
+
+    const fingerprint = JSON.stringify(identity);
+    if (fingerprint === lastApplied) return;
+
+    lastApplied = fingerprint;
+    window.$chatwoot.setUser(identity.identifier, identity.user);
+  };
+
+  apply();
+  setInterval(apply, IDENTITY_POLL_MS);
+};
 
 const runSDK = ({ baseUrl, websiteToken }) => {
   if (window.$chatwoot) {
@@ -222,6 +254,8 @@ const runSDK = ({ baseUrl, websiteToken }) => {
     baseUrl,
     websiteToken,
   });
+
+  startIdentityWatch(chatwootSettings.identifyFrom);
 };
 
 window.chatwootSDK = {
