@@ -33,6 +33,11 @@ const startIdentityWatch = identifyFrom => {
   let lastApplied = null;
 
   const apply = () => {
+    // sendMessage posts straight at the frame with no queue, so anything sent before the widget
+    // has mounted its listener is simply dropped. Waiting for it to report in means the identity
+    // is not marked as sent when nothing received it.
+    if (!window.$chatwoot || !window.$chatwoot.hasLoaded) return;
+
     const identity = resolveIdentity(identifyFrom);
     if (!identity) return;
 
