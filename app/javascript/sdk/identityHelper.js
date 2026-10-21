@@ -56,6 +56,25 @@ export const resolveIdentity = (identifyFrom = {}) => {
   const identifierHash = readPath(identifyFrom.identifierHash);
   if (identifierHash) user.identifier_hash = identifierHash;
 
+  // `customAttributes` maps an attribute key to a path, read the same way as the fields above.
+  // These ride along on set_user rather than making a second request: the widget already
+  // forwards `custom_attributes` and the endpoint already permits it.
+  //
+  // Values are stringified because the attribute definitions this is written for are all of
+  // display type `text`. A numeric id stored as a JSON number renders, but then fails to match
+  // a text filter in the dashboard - silently, which is the worst way for it to fail.
+  const customAttributes = {};
+  Object.entries(identifyFrom.customAttributes || {}).forEach(([key, path]) => {
+    const value = readPath(path);
+    if (value !== undefined && value !== null && value !== '') {
+      customAttributes[key] = String(value);
+    }
+  });
+  if (Object.keys(customAttributes).length) {
+    user.custom_attributes = customAttributes;
+  }
+
+  // Chatwoot requires one of these alongside the identifier; custom attributes do not satisfy it.
   if (!user.name && !user.email && !user.avatar_url) return null;
 
   return { identifier: String(identifier), user };
