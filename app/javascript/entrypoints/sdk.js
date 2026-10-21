@@ -31,6 +31,7 @@ const startIdentityWatch = identifyFrom => {
   if (!identifyFrom || !identifyFrom.identifier) return;
 
   let lastApplied = null;
+  let reportedError = false;
 
   const apply = () => {
     // sendMessage posts straight at the frame with no queue, so anything sent before the widget
@@ -44,8 +45,21 @@ const startIdentityWatch = identifyFrom => {
     const fingerprint = JSON.stringify(identity);
     if (fingerprint === lastApplied) return;
 
-    lastApplied = fingerprint;
-    window.$chatwoot.setUser(identity.identifier, identity.user);
+    // Marked as applied only once setUser has actually returned. Marking first meant a single
+    // throw - a host page replacing a global the SDK leans on, say - left the identity recorded
+    // as sent and never retried, so the visitor stayed anonymous for the rest of the session.
+    try {
+      window.$chatwoot.setUser(identity.identifier, identity.user);
+      lastApplied = fingerprint;
+    } catch (error) {
+      // Reported once rather than on every poll, and lastApplied is left alone so the next tick
+      // tries again: whatever broke may be transient.
+      if (!reportedError) {
+        reportedError = true;
+        // eslint-disable-next-line no-console
+        console.error('[chatwoot] could not apply the visitor identity', error);
+      }
+    }
   };
 
   apply();

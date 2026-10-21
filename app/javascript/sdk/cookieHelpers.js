@@ -2,8 +2,15 @@ import Cookies from 'js-cookie';
 
 const REQUIRED_USER_KEYS = ['avatar_url', 'email', 'name'];
 const ALLOWED_USER_ATTRIBUTES = [...REQUIRED_USER_KEYS, 'identifier_hash'];
-const FNV1A_128_OFFSET_BASIS = 0x6c62272e07bb014262b821756295c58dn;
-const FNV1A_128_PRIME = 0x1000000000000000000013bn;
+// FNV-1a-128 held as four 32-bit limbs, least significant first. The arithmetic below is the
+// same hash as a BigInt implementation and the test vectors prove it; what it avoids is touching
+// the page's `BigInt`, which host sites do replace. One brand's vendor bundle shipped a shim
+// returning undefined with no asUintN, which made every setUser throw and silently disabled
+// visitor identity. A fingerprint for change detection should not be able to break that way.
+const FNV1A_128_OFFSET_BASIS = [0x6295c58d, 0x62b82175, 0x07bb0142, 0x6c62272e];
+// The prime is 2**88 + 0x13b, so multiplying is a shift by 88 plus a small multiply.
+const FNV1A_128_PRIME_LOW = 0x13b;
+const UINT32 = 0x100000000;
 const CONTACT_INFORMATION_ATTRIBUTES = [
   'phone_number',
   'company_name',
@@ -38,16 +45,46 @@ export const getUserString = ({ identifier = '', user }) => {
   return JSON.stringify(userAttributes);
 };
 
+// h * (2**88 + 0x13b) mod 2**128, in place.
+const multiplyByPrime = h => {
+  // The small multiply: each limb times 0x13b stays under 2**53, so it is exact in a double.
+  const low = [0, 0, 0, 0];
+  let carry = 0;
+  for (let i = 0; i < 4; i += 1) {
+    const product = h[i] * FNV1A_128_PRIME_LOW + carry;
+    low[i] = product % UINT32;
+    carry = Math.floor(product / UINT32);
+  }
+
+  // The shift: 88 bits is two whole limbs plus 24, so only limbs 2 and 3 can be reached.
+  const shifted = [
+    0,
+    0,
+    (h[0] << 24) >>> 0, // eslint-disable-line no-bitwise
+    ((h[0] >>> 8) + ((h[1] << 24) >>> 0)) >>> 0, // eslint-disable-line no-bitwise
+  ];
+
+  carry = 0;
+  for (let i = 0; i < 4; i += 1) {
+    const sum = low[i] + shifted[i] + carry;
+    h[i] = sum % UINT32;
+    carry = sum >= UINT32 ? 1 : 0;
+  }
+};
+
 export const fnv1a128 = value => {
   const data = new TextEncoder().encode(value);
-  let hash = FNV1A_128_OFFSET_BASIS;
+  const hash = [...FNV1A_128_OFFSET_BASIS];
 
   data.forEach(byte => {
-    hash ^= BigInt(byte); // eslint-disable-line no-bitwise
-    hash = BigInt.asUintN(128, hash * FNV1A_128_PRIME);
+    hash[0] = (hash[0] ^ byte) >>> 0; // eslint-disable-line no-bitwise
+    multiplyByPrime(hash);
   });
 
-  return hash.toString(16).padStart(32, '0');
+  return hash
+    .map(limb => limb.toString(16).padStart(8, '0'))
+    .reverse()
+    .join('');
 };
 
 export const computeHashForUserData = (...args) =>
